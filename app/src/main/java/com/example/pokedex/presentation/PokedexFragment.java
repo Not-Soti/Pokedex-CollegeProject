@@ -1,32 +1,32 @@
-package com.example.pokedex;
+package com.example.pokedex.presentation;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
+import com.example.pokedex.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link HostFragment#newInstance} factory method to
+ * Use the {@link PokedexFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HostFragment extends Fragment {
+public class PokedexFragment extends Fragment {
 
 /*    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-*/
 
-    private Button pokedexBtn;
-    private Button teamBtn;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;*/
 
-    public HostFragment() {
+    public PokedexFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class HostFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HostFragment.
+     * @return A new instance of fragment PokedexFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HostFragment newInstance(String param1, String param2) {
-        HostFragment fragment = new HostFragment();
+    public static PokedexFragment newInstance(String param1, String param2) {
+        PokedexFragment fragment = new PokedexFragment();
         Bundle args = new Bundle();
         //args.putString(ARG_PARAM1, param1);
         //args.putString(ARG_PARAM2, param2);
@@ -61,13 +61,7 @@ public class HostFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View theView = inflater.inflate(R.layout.fragment_host, container, false);
-
-        pokedexBtn = theView.findViewById(R.id.host_pokedexBtn);
-        teamBtn = theView.findViewById(R.id.host_teamBtn);
-
-        pokedexBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_hostFragment_to_pokedexFragment));
-        teamBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_hostFragment_to_teamFragment));
+        View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
         return theView;
     }

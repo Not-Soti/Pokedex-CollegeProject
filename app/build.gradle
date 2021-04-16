@@ -39,4 +39,14 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    /*Download and use JSON*/
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+    implementation "com.squareup.retrofit2:converter-gson:2.7.1"
+
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+
+    /* Needed to avoid crash on retrofit.Build() */
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
