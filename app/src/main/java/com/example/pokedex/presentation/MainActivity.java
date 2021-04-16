@@ -13,7 +13,11 @@ import com.example.pokedex.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.LinkedList;
+
+import model.pokemonModel.PokemonListInfo;
 import model.pokemonModel.Pokemon;
+import model.pokemonModel.PokemonListItem;
 import netAccess.RestService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,10 +27,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    LinkedList<Pokemon> pokemonList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        pokemonList = new LinkedList<Pokemon>();
 
         String online = isOnline() ? "SI" : "NO";
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
@@ -43,23 +51,25 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         restService = retrofit.create(RestService.class);
 
-        for(int i=1; i<6; i++) {
-            restService.getPokemon(i).enqueue(new Callback<Pokemon>() {
-                @Override
-                public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                    Log.d("---", "Respuesta recibida");
+        restService.getPokemonList(10).enqueue(new Callback<PokemonListInfo>() {
+            @Override
+            public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
 
-                    Pokemon pokemon = response.body();
-
-                    Log.d("---", "Pokemon: " + pokemon.getName());
+                PokemonListInfo pokemonListInfo = response.body();
+                LinkedList<PokemonListItem> lista = new LinkedList<>(pokemonListInfo.getPokemonListItems());
+                for(PokemonListItem p : lista){
+                    Log.d("-------", "Nombre: " + p.getName());
                 }
 
-                @Override
-                public void onFailure(Call<Pokemon> call, Throwable t) {
-                    Log.d("---", "Respuesta fallida");
-                }
-            });
-        }
+
+            }
+
+            @Override
+            public void onFailure(Call<PokemonListInfo> call, Throwable t) {
+
+            }
+        });
+
     }
 
     boolean isOnline(){
