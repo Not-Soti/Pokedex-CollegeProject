@@ -1,6 +1,8 @@
 
 package model.pokemonModel;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
@@ -8,6 +10,8 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("jsonschema2pojo")
 public class Pokemon {
+
+    public Drawable listSprite; //Usado para guardar su imagen al descargarla
 
     @SerializedName("abilities")
     @Expose
