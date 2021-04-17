@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 
 import com.example.pokedex.R;
 
-import model.pokemonModel.Pokemon;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PokedexFragment#newInstance} factory method to
@@ -66,7 +64,7 @@ public class PokedexFragment extends Fragment {
         viewModel = new ViewModelProvider(getActivity()).get(ViewModel.class);
         recyclerView = theView.findViewById(R.id.pokedexFrag_recyclerView);
         Log.d("TAGGGGGGGG", "tam: "+viewModel.getPokemonList().size());
-        pokemonAdapter = new RecycleViewAdapter(viewModel.getPokemonList());
+        pokemonAdapter = new RecycleViewAdapter(getContext(), viewModel.getPokemonList());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(pokemonAdapter);
 

@@ -20,6 +20,9 @@
             app:destination="@id/teamFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
+        <action
+            android:id="@+id/action_hostFragment_to_settingsActivity"
+            app:destination="@id/settingsActivity" />
     </fragment>
     <fragment
         android:id="@+id/pokedexFragment"
@@ -31,4 +34,8 @@
         android:name="com.example.pokedex.presentation.TeamFragment"
         android:label="fragment_team"
         tools:layout="@layout/fragment_team" />
+    <activity
+        android:id="@+id/settingsActivity"
+        android:name="com.example.pokedex.SettingsActivity"
+        android:label="SettingsActivity" />
 </navigation>

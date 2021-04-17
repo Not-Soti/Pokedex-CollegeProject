@@ -1,7 +1,6 @@
 package com.example.pokedex.presentation;
 
-import android.graphics.Bitmap;
-import android.util.Log;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,15 @@ import com.example.pokedex.R;
 import java.util.List;
 import java.util.Locale;
 
-import model.pokemonModel.Pokemon;
+import com.example.pokedex.pokemonModel.Pokemon;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
 
     List<Pokemon> pokemonList;
+    private Context context;
 
-    public  RecycleViewAdapter(List<Pokemon> pokeList){
+    public  RecycleViewAdapter(Context c, List<Pokemon> pokeList){
+        context = c;
         pokemonList = pokeList;
     }
 
@@ -47,6 +48,14 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
         //Imagen
         holder.imageView.setBackground(pokemon.listSprite);
+
+        //Tipos
+        String type1 = pokemon.type1Str;
+        PresentationUtils.setTypeTextViewFormat(context,holder.type1Tv, type1);
+        //Si no tiene segundo tipo, se hace invisible
+        String type2 = pokemon.type2Str;
+        if(type2==null) holder.type2Tv.setVisibility(View.GONE);
+        else PresentationUtils.setTypeTextViewFormat(context,holder.type2Tv, type2);
     }
 
     @Override
@@ -56,15 +65,16 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     protected static class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView nameTv, pokedexNumTv;
+        public TextView nameTv, pokedexNumTv, type1Tv, type2Tv;
         public ImageView imageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTv = itemView.findViewById(R.id.pokeCard_name_tv);
             pokedexNumTv = itemView.findViewById(R.id.pokeCard_id_tv);
-            imageView = itemView.findViewById(R.id.pokeCard_image);
-            //imageView.setBackgroundResource(R.drawable.pokemock);
+            imageView = itemView.findViewById(R.id.pokeCard_sprite);
+            type1Tv = itemView.findViewById(R.id.pokeCard_type1);
+            type2Tv = itemView.findViewById(R.id.pokeCard_type2);
         }
     }
 }

@@ -1,31 +1,16 @@
 package com.example.pokedex.presentation;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.pokedex.R;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import model.pokemonModel.Pokemon;
-import netAccess.RestService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +21,7 @@ public class HostFragment extends Fragment {
 
     private Button pokedexBtn;
     private Button teamBtn;
+    private Button settingsBtn;
 
     public HostFragment() {
         // Required empty public constructor
@@ -74,9 +60,11 @@ public class HostFragment extends Fragment {
 
         pokedexBtn = theView.findViewById(R.id.host_pokedexBtn);
         teamBtn = theView.findViewById(R.id.host_teamBtn);
+        settingsBtn = theView.findViewById(R.id.host_configBtn);
 
         pokedexBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_hostFragment_to_pokedexFragment));
         teamBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_hostFragment_to_teamFragment));
+        settingsBtn.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_hostFragment_to_settingsActivity));
 
         return theView;
     }

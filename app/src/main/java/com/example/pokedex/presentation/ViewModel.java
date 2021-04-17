@@ -2,7 +2,7 @@ package com.example.pokedex.presentation;
 
 import java.util.List;
 
-import model.pokemonModel.Pokemon;
+import com.example.pokedex.pokemonModel.Pokemon;
 
 public class ViewModel extends androidx.lifecycle.ViewModel {
 
