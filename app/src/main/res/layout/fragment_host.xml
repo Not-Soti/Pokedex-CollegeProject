@@ -12,7 +12,7 @@
 
         <Button
             android:id="@+id/host_pokedexBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="256dp"
             android:text="Pokédex"
@@ -22,7 +22,7 @@
 
         <Button
             android:id="@+id/host_configBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Configuracion"
@@ -32,7 +32,7 @@
 
         <Button
             android:id="@+id/host_teamBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Equipo"
