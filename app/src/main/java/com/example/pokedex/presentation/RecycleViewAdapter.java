@@ -1,6 +1,10 @@
 package com.example.pokedex.presentation;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokedex.R;
@@ -21,10 +28,13 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     List<Pokemon> pokemonList;
     private Context context;
+    private String TAG = "RecycleViewAdapter";
+    private Fragment fragment;
 
-    public  RecycleViewAdapter(Context c, List<Pokemon> pokeList){
+    public  RecycleViewAdapter(Context c, Fragment f, List<Pokemon> pokeList){
         context = c;
         pokemonList = pokeList;
+        fragment = f;
     }
 
     @NonNull
@@ -59,6 +69,16 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             holder.type2Tv.setVisibility(View.VISIBLE);
             PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(PokemonDetailFragment.PARAM_POKEMON_ID, pokemon.getId());
+                Navigation.findNavController(v).navigate(R.id.action_pokedexFragment_to_pokemonDetailFragment,bundle);
+            }
+        });
+
     }
 
     @Override
@@ -79,5 +99,6 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             type1Tv = itemView.findViewById(R.id.pokeCard_type1);
             type2Tv = itemView.findViewById(R.id.pokeCard_type2);
         }
+
     }
 }

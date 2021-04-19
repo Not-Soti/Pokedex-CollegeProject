@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.core.content.res.ResourcesCompat;
-import androidx.databinding.Observable;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,9 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.pokedex.MainActivity;
 import com.example.pokedex.R;
-import com.example.pokedex.Repository;
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.pokemonModel.Pokemon;
 import com.example.pokedex.pokemonModel.PokemonListInfo;
@@ -33,11 +31,9 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -121,6 +117,7 @@ public class PokedexFragment extends Fragment {
         });
 
         recyclerView = theView.findViewById(R.id.pokedexFrag_recyclerView);
+
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String numberOfPokemonStr = sharedPreferences.getString("pokemon_count", "10");
@@ -254,10 +251,15 @@ public class PokedexFragment extends Fragment {
             public void run() {
                 Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
                 progressDialog.dismiss();
-                pokemonAdapter = new RecycleViewAdapter(getContext(), viewModel.getPokemonList());
+                pokemonAdapter = new RecycleViewAdapter(getContext(), PokedexFragment.this, viewModel.getPokemonList());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             }
         });
     }
+
+   public void openPokemonDetailsFragment(int pokemonID){
+
+   }
+
 }

@@ -28,7 +28,11 @@
         android:id="@+id/pokedexFragment"
         android:name="com.example.pokedex.presentation.PokedexFragment"
         android:label="fragment_pokedex"
-        tools:layout="@layout/fragment_pokedex" />
+        tools:layout="@layout/fragment_pokedex" >
+        <action
+            android:id="@+id/action_pokedexFragment_to_pokemonDetailFragment"
+            app:destination="@id/pokemonDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/teamFragment"
         android:name="com.example.pokedex.presentation.TeamFragment"
@@ -38,4 +42,13 @@
         android:id="@+id/settingsActivity"
         android:name="com.example.pokedex.SettingsActivity"
         android:label="SettingsActivity" />
+    <fragment
+        android:id="@+id/pokemonDetailFragment"
+        android:name="com.example.pokedex.presentation.PokemonDetailFragment"
+        android:label="fragment_pokemon_detail"
+        tools:layout="@layout/fragment_pokemon_detail" >
+        <argument
+            android:name="pokemon_id"
+            app:argType="integer" />
+    </fragment>
 </navigation>
