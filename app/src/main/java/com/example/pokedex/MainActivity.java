@@ -41,7 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private ViewModel viewModel;
-    int cantidadPokemon = 10; //TODO
+    private String TAG = "--MainActivity--";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,5 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
-
 
 }

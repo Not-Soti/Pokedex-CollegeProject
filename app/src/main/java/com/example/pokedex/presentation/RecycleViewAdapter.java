@@ -55,7 +55,10 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         //Si no tiene segundo tipo, se hace invisible
         String type2 = pokemon.type2Str;
         if(type2==null) holder.type2Tv.setVisibility(View.GONE);
-        else PresentationUtils.setTypeTextViewFormat(context,holder.type2Tv, type2);
+        else {
+            holder.type2Tv.setVisibility(View.VISIBLE);
+            PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
+        }
     }
 
     @Override

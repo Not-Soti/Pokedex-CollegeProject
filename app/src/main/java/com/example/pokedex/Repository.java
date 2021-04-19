@@ -62,11 +62,13 @@ public class Repository {
             2- URL donde obtener la informacion del pokemon
          */
 
+
         restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonListInfo>() {
             @Override
             public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
 
                 PokemonListInfo pokemonListInfo = response.body();
+                Log.d(TAG, response.message());
 
                 //Lista con nombre y URL de cada pokemon
                 LinkedList<PokemonListItem> lista = new LinkedList<>(pokemonListInfo.getPokemonListItems());
@@ -75,6 +77,8 @@ public class Repository {
                 for(PokemonListItem poke : lista) {
                     String[] url_split = poke.getUrl().split("/"); //El ID es el ultimo elemento de la URL
                     int id = Integer.parseInt(url_split[url_split.length-1]);
+
+                    Log.d(TAG,"Pidiendo pokemon "+id);
 
                     //De esta peticion se obtiene el objeto Pokemon necesario con sus características
                     restService.getPokemonById(id).enqueue(new Callback<Pokemon>() {
@@ -92,6 +96,7 @@ public class Repository {
                         }
                         @Override
                         public void onFailure(Call<Pokemon> call, Throwable t) {
+                            t.printStackTrace();
                         }
                     });
                 }
@@ -99,7 +104,7 @@ public class Repository {
             }
             @Override
             public void onFailure(Call<PokemonListInfo> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
     }
@@ -155,6 +160,7 @@ public class Repository {
             Type type2 = types.get(1);
             String type2Name = type2.getType().getName();
             pokemon.type2Str = type2Name;
+            //Log.d(TAG,"tipo2 "+ type2Name);
         }else{
             pokemon.type2Str = null;
         }
