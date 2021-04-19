@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
         Log.d("---","Online: ".concat(online) );
 
-
-
     }
 
     private boolean isOnline(){

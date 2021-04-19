@@ -116,52 +116,19 @@ public class PokedexFragment extends Fragment {
                 true,
                 false);
 
-        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
-            @Override
-            public void onChanged(ObservableList<Pokemon> sender) {
-
-            }
-
-            @Override
-            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
-            }
-
-            @Override
-            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                Log.d(TAG,"Insertando pokemon");
-                //Si se obtienen todos, se ordena la lista por ID pues la descarga es asíncrona
-                if(viewModel.getPokemonList().size() == pokemonCount){
-                    Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
-                    Log.d("TAG", "Lista ordenada");
-                    progressDialog.dismiss();
-                    populatePokemonAdapter();
-                }
-            }
-
-            @Override
-            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
-
-            }
-
-            @Override
-            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
-            }
-        });
-
-        Repository repository = new Repository(getContext());
+        Repository repository = new Repository(PokedexFragment.this);
         repository.getPokemon(pokemonCount, viewModel.getPokemonList());
 
         return theView;
     }
 
 
-    private void populatePokemonAdapter(){
+    public void populatePokemonAdapter(){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
+                progressDialog.dismiss();
                 pokemonAdapter = new RecycleViewAdapter(getContext(), viewModel.getPokemonList());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);

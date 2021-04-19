@@ -1,23 +1,29 @@
 package com.example.pokedex;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableArrayList;
+import androidx.fragment.app.Fragment;
 
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.pokemonModel.Pokemon;
 import com.example.pokedex.pokemonModel.PokemonListInfo;
 import com.example.pokedex.pokemonModel.PokemonListItem;
 import com.example.pokedex.pokemonModel.Type;
+import com.example.pokedex.presentation.PokedexFragment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,15 +35,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Repository {
 
+    private String TAG = "--Repository--";
     private RestService restService;
-    private Context context;
+    private Fragment fragment;
 
-    public Repository(Context c){
-        context=c;
+    public Repository(Fragment f){
+        fragment=f;
     }
 
 
-    public void getPokemon(int pokemonCount, ObservableArrayList<Pokemon> pokemonList){
+    public void getPokemon(int pokemonCount, ArrayList<Pokemon> pokemonList){
 
         RestService restService;
         Gson gson = new GsonBuilder()
@@ -60,6 +67,7 @@ public class Repository {
             public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
 
                 PokemonListInfo pokemonListInfo = response.body();
+
                 //Lista con nombre y URL de cada pokemon
                 LinkedList<PokemonListItem> lista = new LinkedList<>(pokemonListInfo.getPokemonListItems());
 
@@ -79,7 +87,7 @@ public class Repository {
                             getTypeNames(pokemon);
 
                             //Obtener su imagen para la lista
-                            getListSprite(pokemon, pokemonList);
+                            getListSprite(pokemon, pokemonList, pokemonCount);
 
                         }
                         @Override
@@ -101,7 +109,7 @@ public class Repository {
      * de la URL de referencia
      * @param pokemon: Pokemon del que obtener el sprite
      */
-    private void getListSprite(Pokemon pokemon, ObservableArrayList<Pokemon> pokemonList){
+    private void getListSprite(Pokemon pokemon, ArrayList<Pokemon> pokemonList, int pokemonCount){
         //Se obtiene su imagen de la URL apropiada en un hilo nuevo
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -115,10 +123,16 @@ public class Repository {
                 } catch (IOException e) {
                     e.printStackTrace();
                     //Si no se obtiene, se pone la guardada en la aplicacion
-                    sprite = ResourcesCompat.getDrawable(context.getResources(), R.drawable.pokemock, null);
+                    sprite = ResourcesCompat.getDrawable(fragment.getContext().getResources(), R.drawable.pokemock, null);
                 }
                 pokemon.listSprite = sprite;
                 pokemonList.add(pokemon);
+                Log.d(TAG, "Añadido pokemon "+pokemonList.size());
+                if(pokemonList.size() == pokemonCount){
+                    Collections.sort(pokemonList, (p1, p2) -> p1.getId() - p2.getId());
+                    Log.d("TAG", "Lista ordenada");
+                    ((PokedexFragment)fragment).populatePokemonAdapter();
+                }
             }
         });
         thread.start();
