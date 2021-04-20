@@ -4,7 +4,7 @@ import androidx.databinding.ObservableArrayList;
 
 import com.example.pokedex.model.pokemonModel.Pokemon;
 
-public class ViewModel extends androidx.lifecycle.ViewModel {
+public class PokedexViewModel extends androidx.lifecycle.ViewModel {
 
     private ObservableArrayList<Pokemon> pokemonList = new ObservableArrayList<>();
 

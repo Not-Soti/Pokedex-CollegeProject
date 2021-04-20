@@ -10,11 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.pokedex.presentation.ViewModel;
+import com.example.pokedex.presentation.PokedexViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ViewModel viewModel;
+    private PokedexViewModel pokedexViewModel;
     private String TAG = "--MainActivity--";
 
     @Override
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewModel = new ViewModelProvider(this).get(ViewModel.class);
+        pokedexViewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
 
         String online = isOnline() ? "SI" : "NO";
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();

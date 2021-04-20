@@ -48,7 +48,7 @@ public class PokemonDetailFragment extends Fragment {
     public static final String PARAM_POKEMON_ID = "pokemon_id";
     private final String TAG = "PokemonDetailFragment";
     private int pokemonID;
-    private ViewModel viewModel;
+    private PokedexViewModel pokedexViewModel;
 
     private ImageView pokemonSprite;
     private TextView nameTv, idTv;
@@ -121,7 +121,7 @@ public class PokemonDetailFragment extends Fragment {
         speDefenseBar.setMax(255);
         speedBar.setMax(255);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        pokedexViewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class);
         Log.d(TAG, "Pokemon: "+ pokemonID);
 
         getPokemonInfo();

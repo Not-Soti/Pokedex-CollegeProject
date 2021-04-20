@@ -2,17 +2,20 @@ package com.example.pokedex.presentation;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.R;
 
 import java.util.List;
@@ -22,15 +25,14 @@ import com.example.pokedex.model.pokemonModel.Pokemon;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
 
-    List<Pokemon> pokemonList;
     private Context context;
     private String TAG = "RecycleViewAdapter";
-    private Fragment fragment;
+    private PokedexViewModel viewModel;
 
-    public  RecycleViewAdapter(Context c, Fragment f, List<Pokemon> pokeList){
+    public  RecycleViewAdapter(Context c, PokedexViewModel vm, List<Pokemon> pokeList){
         context = c;
-        pokemonList = pokeList;
-        fragment = f;
+        //pokemonList = pokeList;
+        viewModel = vm;
     }
 
     @NonNull
@@ -42,7 +44,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull RecycleViewAdapter.ViewHolder holder, int position) {
-        Pokemon pokemon = pokemonList.get(position);
+        Pokemon pokemon = viewModel.getPokemonList().get(position);
 
         //Nombre
         String name = pokemon.getName();
@@ -66,6 +68,31 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
         }
 
+        if(pokemon.isFav){
+            Log.d(TAG, "Es fav");
+            holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
+        }else{
+            Log.d(TAG, "NO Es fav");
+            holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
+        }
+
+        holder.favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Repository repository = new Repository(context, viewModel);
+                if(!pokemon.isFav) {
+                    pokemon.isFav=true;
+                    repository.addFavPokemon(pokemon);
+                    holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
+                }
+                else {
+                    pokemon.isFav=false;
+                    repository.removeFavPokemon(pokemon);
+                    holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
+                }
+            }
+        });
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,13 +106,14 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public int getItemCount() {
-        return pokemonList.size();
+        return viewModel.getPokemonList().size();
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView nameTv, pokedexNumTv, type1Tv, type2Tv;
         public ImageView imageView;
+        public ImageButton favButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -94,6 +122,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             imageView = itemView.findViewById(R.id.pokeCard_sprite);
             type1Tv = itemView.findViewById(R.id.pokeCard_type1);
             type2Tv = itemView.findViewById(R.id.pokeCard_type2);
+            favButton = itemView.findViewById(R.id.pokeCard_fav_button);
         }
 
     }
