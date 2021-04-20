@@ -12,12 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.pokedex.R;
 import com.example.pokedex.model.pokemonModel.FlavorTextEntry;
 import com.example.pokedex.model.pokemonModel.Language;
 import com.example.pokedex.model.pokemonModel.PokemonSpeciesDetail;
+import com.example.pokedex.model.pokemonModel.Stat;
+import com.example.pokedex.model.pokemonModel.Stat__1;
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.model.pokemonModel.Pokemon;
 import com.google.gson.Gson;
@@ -51,6 +54,9 @@ public class PokemonDetailFragment extends Fragment {
     private TextView nameTv, idTv;
     private TextView flavorTextTv;
     private TextView weighTv, heightTv;
+    
+    private TextView healthTv, attackTv, speAttackTv, defenseTv, speDefenseTv, speedTv;
+    private ProgressBar healthBar, attackBar, speAttackBar, defenseBar, speDefenseBar, speedBar;
 
     public PokemonDetailFragment() {
         // Required empty public constructor
@@ -93,6 +99,27 @@ public class PokemonDetailFragment extends Fragment {
         flavorTextTv = theView.findViewById(R.id.poke_detail_flavorTextTv);
         weighTv = theView.findViewById(R.id.poke_detail_weightTv);
         heightTv = theView.findViewById(R.id.poke_detail_heightTv);
+        
+        healthTv = theView.findViewById(R.id.poke_detail_healthTv);
+        attackTv = theView.findViewById(R.id.poke_detail_attackTv);
+        speAttackTv = theView.findViewById(R.id.poke_detail_speAttackTv);
+        defenseTv = theView.findViewById(R.id.poke_detail_deffenseTv);
+        speDefenseTv = theView.findViewById(R.id.poke_detail_speDeffenseTv);
+        speedTv = theView.findViewById(R.id.poke_detail_speedTv);
+
+        healthBar = theView.findViewById(R.id.poke_detail_healthBar);
+        attackBar = theView.findViewById(R.id.poke_detail_attackBar);
+        speAttackBar = theView.findViewById(R.id.poke_detail_speAttackBar);
+        defenseBar = theView.findViewById(R.id.poke_detail_deffenseBar);
+        speDefenseBar = theView.findViewById(R.id.poke_detail_speDeffenseBar);
+        speedBar = theView.findViewById(R.id.poke_detail_speedBar);
+
+        healthBar.setMax(255);
+        attackBar.setMax(255);
+        defenseBar.setMax(255);
+        speAttackBar.setMax(255);
+        speDefenseBar.setMax(255);
+        speedBar.setMax(255);
 
         viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         Log.d(TAG, "Pokemon: "+ pokemonID);
@@ -138,12 +165,50 @@ public class PokemonDetailFragment extends Fragment {
                 String pokeWeightStr = getResources().getString(R.string.poke_detail_weight) + String.format(Locale.getDefault(), " %.02f Kg", pokeWeight);
                 weighTv.setText(pokeWeightStr);
 
+                getStats(pokemon);
+
             }
 
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
             }
         });
+    }
+
+    private void getStats(Pokemon pokemon){
+        List<Stat> stats = pokemon.getStats();
+
+        for(Stat stat : stats){
+            Stat__1 aux = stat.getStat();
+            int numericStat = stat.getBaseStat();
+            String numericStatStr = String.valueOf(numericStat);
+            switch (aux.getName()){
+                case "hp":
+                    healthTv.setText(numericStatStr);
+                    healthBar.setProgress(numericStat);
+                    break;
+                case "attack":
+                    attackTv.setText(numericStatStr);
+                    attackBar.setProgress(numericStat);
+                    break;
+                case "defense":
+                    defenseTv.setText(numericStatStr);
+                    defenseBar.setProgress(numericStat);
+                    break;
+                case "special-attack":
+                    speAttackTv.setText(numericStatStr);
+                    speAttackBar.setProgress(numericStat);
+                    break;
+                case "special-defense":
+                    speDefenseTv.setText(numericStatStr);
+                    speDefenseBar.setProgress(numericStat);
+                    break;
+                case "speed":
+                    speedTv.setText(numericStatStr);
+                    speedBar.setProgress(numericStat);
+                    break;
+            }
+        }
     }
 
     private void getFlavorText(Pokemon pokemon){
@@ -196,7 +261,7 @@ public class PokemonDetailFragment extends Fragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Pidiendo sprite del pokemon "+pokemon.getId());
+                //Log.d(TAG, "Pidiendo sprite del pokemon "+pokemon.getId());
                 String spriteURL = pokemon.getSprites().getOther().getOfficialArtwork().getFrontDefault();
                 Drawable sprite = null;
                 try {
@@ -211,7 +276,7 @@ public class PokemonDetailFragment extends Fragment {
 
                 Drawable finalSprite = sprite;
                 getActivity().runOnUiThread(() -> pokemonSprite.setBackground(finalSprite));
-                Log.d(TAG, "Sprite obtenido");
+                //Log.d(TAG, "Sprite obtenido");
             }
         });
         thread.start();

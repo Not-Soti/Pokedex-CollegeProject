@@ -101,7 +101,9 @@ public class PokedexFragment extends Fragment {
             }
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                //Log.d(TAG, "Tam lista: "+sender.size());
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
                 if(sender.size() == pokemonCount){
                     Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
                     populatePokemonAdapter();
@@ -147,12 +149,14 @@ public class PokedexFragment extends Fragment {
 
         //Se crea un dialog indicando que se están descargando cosas, el cual se eliminara
         //cuando acabe la descarga.
-        progressDialog = ProgressDialog.show(
-                getContext(),
-                "Descargando",
-                "Se está descargando la informacion necesaria",
-                true,
-                false);
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Se está descargando la informacion necesaria");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(pokemonCount);
+        progressDialog.show();
 
         RestService restService;
         Gson gson = new GsonBuilder()
