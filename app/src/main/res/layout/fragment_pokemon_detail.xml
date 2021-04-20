@@ -30,9 +30,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="TextView"
+            android:text="Nombre"
             android:textStyle="bold"
             android:textColor="@color/black"
+            android:textSize="@dimen/poke_detail_name_textSize"
             app:layout_constraintStart_toStartOf="@+id/poke_detail_sprite"
             app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
 
@@ -41,9 +42,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="TextView"
+            android:text="Nº"
             android:textStyle="bold"
             android:textColor="@color/black"
+            android:textSize="@dimen/poke_detail_name_textSize"
             app:layout_constraintEnd_toEndOf="@+id/poke_detail_sprite"
             app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
 
@@ -56,5 +58,112 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/poke_detail_nameTv" />
+
+        <ScrollView
+            android:layout_width="354dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/poke_detail_flavorTextTv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Descripcion"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/poke_detail_weightTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/poke_detail_weight"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
+
+                <TextView
+                    android:id="@+id/poke_detail_heightTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/poke_detail_height"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:text="PS:"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:layout_editor_absoluteY="79dp" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ataque:"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Defensa:"
+                    app:layout_constraintStart_toStartOf="@+id/textView6"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ataque especial:"
+                    app:layout_constraintStart_toStartOf="@+id/textView7"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Defensa especial:"
+                    app:layout_constraintStart_toStartOf="@+id/textView8"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Velocidad:"
+                    app:layout_constraintStart_toStartOf="@+id/textView9"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -15,14 +15,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokemonModel.FlavorTextEntry;
+import com.example.pokedex.model.pokemonModel.Language;
+import com.example.pokedex.model.pokemonModel.PokemonSpeciesDetail;
 import com.example.pokedex.netAccess.RestService;
-import com.example.pokedex.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokemonModel.Pokemon;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -45,6 +49,8 @@ public class PokemonDetailFragment extends Fragment {
 
     private ImageView pokemonSprite;
     private TextView nameTv, idTv;
+    private TextView flavorTextTv;
+    private TextView weighTv, heightTv;
 
     public PokemonDetailFragment() {
         // Required empty public constructor
@@ -84,6 +90,9 @@ public class PokemonDetailFragment extends Fragment {
         pokemonSprite = theView.findViewById(R.id.poke_detail_sprite);
         nameTv = theView.findViewById(R.id.poke_detail_nameTv);
         idTv = theView.findViewById(R.id.poke_detail_idTv);
+        flavorTextTv = theView.findViewById(R.id.poke_detail_flavorTextTv);
+        weighTv = theView.findViewById(R.id.poke_detail_weightTv);
+        heightTv = theView.findViewById(R.id.poke_detail_heightTv);
 
         viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
         Log.d(TAG, "Pokemon: "+ pokemonID);
@@ -118,12 +127,66 @@ public class PokemonDetailFragment extends Fragment {
                 String capitalizedName = name.substring(0,1).toUpperCase() + name.substring(1); //Poner la primera letra en mayuscula
                 nameTv.setText(capitalizedName);
 
+                getFlavorText(pokemon);
+
                 getPokemonSprite(pokemon);
+
+                double pokeHeight = ((double) pokemon.getHeight()) / 10;
+                String pokeHeightStr = getResources().getString(R.string.poke_detail_height) + String.format(Locale.getDefault(), " %.02f m", pokeHeight);
+                heightTv.setText(pokeHeightStr);
+                double pokeWeight = ((double) pokemon.getWeight()) / 10;
+                String pokeWeightStr = getResources().getString(R.string.poke_detail_weight) + String.format(Locale.getDefault(), " %.02f Kg", pokeWeight);
+                weighTv.setText(pokeWeightStr);
 
             }
 
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
+            }
+        });
+    }
+
+    private void getFlavorText(Pokemon pokemon){
+        RestService restService;
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://pokeapi.co/api/v2/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        restService = retrofit.create(RestService.class);
+
+        Log.d(TAG, "Pidiendo flavor");
+
+        restService.getPokemonSpeciesDetail(pokemon.getId()).enqueue(new Callback<PokemonSpeciesDetail>() {
+            @Override
+            public void onResponse(Call<PokemonSpeciesDetail> call, Response<PokemonSpeciesDetail> response) {
+                Log.d(TAG, "Obtenido flavor, response code: "+response.code());
+                PokemonSpeciesDetail detail = response.body();
+                List<FlavorTextEntry> entries = detail.getFlavorTextEntries();
+
+                Log.d(TAG, "obtenida lista de entradas");
+
+                boolean hasEntrie = false;
+                int pos = 0;
+                String flavor = "Nada";
+                while ((!hasEntrie) && (pos<entries.size())){
+                    Log.d(TAG,"Buscando");;
+                    Language lang = entries.get(pos).getLanguage();
+                    Log.d(TAG,"Lang: "+ lang.getName());
+                    if (lang.getName().equals("es")){ //TODO INTERNACIONALIZACION
+                        flavor = entries.get(pos).getFlavorText();
+                        hasEntrie=true;
+                    }
+                    pos++;
+                }
+                flavorTextTv.setText(flavor);
+            }
+
+            @Override
+            public void onFailure(Call<PokemonSpeciesDetail> call, Throwable t) {
 
             }
         });
@@ -148,6 +211,7 @@ public class PokemonDetailFragment extends Fragment {
 
                 Drawable finalSprite = sprite;
                 getActivity().runOnUiThread(() -> pokemonSprite.setBackground(finalSprite));
+                Log.d(TAG, "Sprite obtenido");
             }
         });
         thread.start();

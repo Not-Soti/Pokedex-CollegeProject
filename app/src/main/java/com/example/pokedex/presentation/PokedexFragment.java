@@ -8,7 +8,6 @@ import android.os.Bundle;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,10 +20,10 @@ import android.view.ViewGroup;
 
 import com.example.pokedex.R;
 import com.example.pokedex.netAccess.RestService;
-import com.example.pokedex.pokemonModel.Pokemon;
-import com.example.pokedex.pokemonModel.PokemonListInfo;
-import com.example.pokedex.pokemonModel.PokemonListItem;
-import com.example.pokedex.pokemonModel.Type;
+import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokemonModel.PokemonListInfo;
+import com.example.pokedex.model.pokemonModel.PokemonListItem;
+import com.example.pokedex.model.pokemonModel.Type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -62,13 +61,9 @@ public class PokedexFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment PokedexFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PokedexFragment newInstance(String param1, String param2) {
+    public static PokedexFragment newInstance() {
         PokedexFragment fragment = new PokedexFragment();
         Bundle args = new Bundle();
 
@@ -80,8 +75,7 @@ public class PokedexFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            //mParam1 = getArguments().getString(ARG_PARAM1);
-            //mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -91,8 +85,13 @@ public class PokedexFragment extends Fragment {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
+        /*
+                TODO *      CAMBIAR A LA SETTINGS ACTIVITY HACE QUE EL
+                TODO *      VIEWMODEL SE REINICIE PORQUE ESO, SE CAMBIA DE ACTIVITY
+         */
+
         viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        viewModel.getPokemonList().clear();
+        //viewModel.getPokemonList().clear();
         viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
             @Override
             public void onChanged(ObservableList<Pokemon> sender) {
@@ -129,6 +128,23 @@ public class PokedexFragment extends Fragment {
         }
         pokemonCount=number;
 
+
+        /*Repository repository = new Repository(PokedexFragment.this);
+        repository.getPokemon(pokemonCount, viewModel.getPokemonList());*/
+
+        //Descargar los pokemon si no se han descargado ya antes
+        if(viewModel.getPokemonList().isEmpty()) {
+            getPokemon();
+        }else{
+            //Si estan descargados se muestran en pantalla
+            populatePokemonAdapter();
+        }
+
+        return theView;
+    }
+
+    private void getPokemon(){
+
         //Se crea un dialog indicando que se están descargando cosas, el cual se eliminara
         //cuando acabe la descarga.
         progressDialog = ProgressDialog.show(
@@ -138,15 +154,6 @@ public class PokedexFragment extends Fragment {
                 true,
                 false);
 
-        /*Repository repository = new Repository(PokedexFragment.this);
-        repository.getPokemon(pokemonCount, viewModel.getPokemonList());*/
-
-        getPokemon();
-
-        return theView;
-    }
-
-    private void getPokemon(){
         RestService restService;
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -163,7 +170,7 @@ public class PokedexFragment extends Fragment {
             public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
 
                 PokemonListInfo pokemonListInfo = response.body();
-                Log.d(TAG, response.message());
+
 
                 //Lista con nombre y URL de cada pokemon
                 LinkedList<PokemonListItem> lista = new LinkedList<>(pokemonListInfo.getPokemonListItems());
@@ -206,7 +213,7 @@ public class PokedexFragment extends Fragment {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Pidiendo sprite del pokemon "+pokemon.getId());
+                //Log.d(TAG, "Pidiendo sprite del pokemon "+pokemon.getId());
                 String spriteURL = pokemon.getSprites().getFrontDefault();
                 Drawable sprite = null;
                 try {
@@ -220,7 +227,7 @@ public class PokedexFragment extends Fragment {
                 }
                 pokemon.listSprite = sprite;
                 viewModel.addPokemon(pokemon);
-                Log.d(TAG, "añadido sprite del pokemon "+pokemon.getId() + ", total añadidos: "+viewModel.getPokemonList().size());
+                //Log.d(TAG, "añadido sprite del pokemon "+pokemon.getId() + ", total añadidos: "+viewModel.getPokemonList().size());
             }
         });
         thread.start();
@@ -249,8 +256,8 @@ public class PokedexFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
-                progressDialog.dismiss();
+                //Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
+                if (progressDialog!=null) progressDialog.dismiss();
                 pokemonAdapter = new RecycleViewAdapter(getContext(), PokedexFragment.this, viewModel.getPokemonList());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);

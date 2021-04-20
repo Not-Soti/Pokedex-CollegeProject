@@ -18,4 +18,6 @@
     <string name="type_ghost">Ghost</string>
     <string name="type_dark">Dark</string>
     <string name="type_fairy">Fairy</string>
+    <string name="poke_detail_height">Height:</string>
+    <string name="poke_detail_weight">Weight:</string>
 </resources>

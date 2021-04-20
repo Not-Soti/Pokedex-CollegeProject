@@ -1,10 +1,7 @@
 package com.example.pokedex.presentation;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pokedex.R;
@@ -22,7 +18,7 @@ import com.example.pokedex.R;
 import java.util.List;
 import java.util.Locale;
 
-import com.example.pokedex.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokemonModel.Pokemon;
 
 public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
 
