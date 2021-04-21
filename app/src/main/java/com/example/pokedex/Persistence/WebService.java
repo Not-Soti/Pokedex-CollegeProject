@@ -2,6 +2,7 @@ package com.example.pokedex.Persistence;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModel;
@@ -85,6 +86,7 @@ public class WebService {
 
     public void getFavsFromJSON(HashSet<Integer> pokemonIDs){
         for(int id : pokemonIDs){
+            Log.d(TAG, "getFavsFromJSON id "+ id);
             getPokemonByID(id);
         }
     }

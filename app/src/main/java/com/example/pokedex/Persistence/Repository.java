@@ -97,11 +97,9 @@ public class Repository {
                 oos.close();
                 fos.close();
             }
-            Log.d(TAG, "El fichero existe");
             fis = context.openFileInput(file.getName());
             ois = new ObjectInputStream(fis);
             favs = (HashSet<Integer>) ois.readObject();
-            Log.d(TAG, "Habia guardados "+favs.size());
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -113,8 +111,7 @@ public class Repository {
         return favs;
     }
 
-    public void addFavPokemon(Pokemon p){
-        Log.d(TAG, "Añadiendo pokemon");
+    public synchronized void addFavPokemon(Pokemon p){
         HashSet<Integer> favs = getFavouritePokemon();
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -138,8 +135,7 @@ public class Repository {
         Log.d(TAG, "Pokemon guardado. Hay "+favs.size());
     }
 
-    public void removeFavPokemon(Pokemon p){
-        Log.d(TAG, "Eliminando pokemon");
+    public synchronized void removeFavPokemon(Pokemon p){
         HashSet<Integer> favs = getFavouritePokemon();
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -160,6 +156,6 @@ public class Repository {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "Pokemon guardado. Hay "+favs.size());
+        Log.d(TAG, "Pokemon elimiado. Hay "+favs.size());
     }
 }

@@ -90,9 +90,13 @@ public class PokedexFragment extends Fragment {
             }
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                //updateFavSet();
                 if(favouritePokemonSet != null){
                     if(favouritePokemonSet.contains(sender.get(positionStart).getId())){
                         sender.get(positionStart).isFav = true;
+                        pokedexViewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isFav = false;
                     }
                 }
                 if(progressDialog != null){
@@ -100,7 +104,7 @@ public class PokedexFragment extends Fragment {
                 }
                 if(sender.size() == pokemonCount){
                     Collections.sort(pokedexViewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
-                    populatePokemonAdapter(0);
+                    if(tabLayout.getSelectedTabPosition()==0){populatePokemonAdapter(0);}
                 }
             }
             @Override
@@ -119,29 +123,33 @@ public class PokedexFragment extends Fragment {
 
             @Override
             public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
             }
 
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                sender.get(positionStart).isFav = true;
+
                 if(progressDialog != null){
                     progressDialog.setProgress(sender.size());
                 }
-                if(sender.size() == pokemonFavCount){
+
+                updateFavSet();
+                if(pokedexViewModel.getFavsList().size() == favouritePokemonSet.size()) {
                     Collections.sort(pokedexViewModel.getFavsList(), (p1, p2) -> p1.getId() - p2.getId());
-                    populatePokemonAdapter(1);
+                    if (tabLayout.getSelectedTabPosition() == 1) {
+                        populatePokemonAdapter(1);
+                    }
                 }
+
             }
 
             @Override
             public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
 
             }
-
             @Override
             public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
+                updateFavSet();
+                if(tabLayout.getSelectedTabPosition()==1){populatePokemonAdapter(1);}
             }
         });
 
@@ -149,7 +157,7 @@ public class PokedexFragment extends Fragment {
         tabLayout = theView.findViewById(R.id.pokedexFrag_TabLayout);
 
         repository = new Repository(getContext(), pokedexViewModel);
-        favouritePokemonSet = repository.getFavouritePokemon();
+
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -180,18 +188,22 @@ public class PokedexFragment extends Fragment {
         int number = 10;
         try{
             number = Integer.parseInt(numberOfPokemonStr);
-        }catch (Exception e){
-            Log.d("TAAAAAG", "Mal numero: "+number);
-        }
+        }catch (Exception e){ }
         pokemonCount=number;
-        pokemonFavCount=favouritePokemonSet.size();
 
+
+        updateFavSet();
         getPokemonAll();
 
         return theView;
     }
 
+    private void updateFavSet(){
+        favouritePokemonSet = repository.getFavouritePokemon();
+    }
+
     private void getPokemonAll(){
+        updateFavSet();
         //Descargar los pokemon si no se han descargado ya antes
         if(pokedexViewModel.getPokemonList().isEmpty()) {
             downloadPokemonAll();
@@ -202,11 +214,18 @@ public class PokedexFragment extends Fragment {
     }
 
     private void getPokemonFavs(){
-        //Descargar los pokemon si no se han descargado ya antes
-        if(pokedexViewModel.getFavsList().isEmpty()) {
+/*        //Descargar los pokemon si no se han descargado ya antes
+        updateFavSet();
+        if((pokedexViewModel.getFavsList().size() != favouritePokemonSet.size()) && (favouritePokemonSet.size() != 0)) {
             downloadPokemonFavs();
         }else{
             //Si estan descargados se muestran en pantalla
+            populatePokemonAdapter(1);
+        }*/
+        updateFavSet();
+        if(pokedexViewModel.getFavsList().size() != favouritePokemonSet.size()){
+            downloadPokemonFavs();
+        }else {
             populatePokemonAdapter(1);
         }
     }
@@ -232,7 +251,7 @@ public class PokedexFragment extends Fragment {
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setMax(pokemonFavCount);
+        progressDialog.setMax(favouritePokemonSet.size());
         progressDialog.show();
         repository.getPokemonFavsFromRest(favouritePokemonSet);
     }
@@ -240,11 +259,12 @@ public class PokedexFragment extends Fragment {
     public void populatePokemonAdapter(int type){
         final int finalType = type; //0 = All pokemon
                                     //1 = Favourite pokemon
-        Log.d(TAG, "Se llegaaaaaaaaa");
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 //Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
+                Log.d(TAG, "Tamaño set de favoritos: "+favouritePokemonSet.size());
+                Log.d(TAG, "Tamaño de la lista de favoritos: " + pokedexViewModel.getFavsList().size());
                 if (progressDialog!=null) progressDialog.dismiss();
                 pokemonAdapter = new RecycleViewAdapter(getContext(), pokedexViewModel, type);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
