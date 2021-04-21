@@ -1,5 +1,6 @@
 package com.example.pokedex.Persistence;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -41,12 +42,12 @@ public class WebService {
     private Gson gson;
     private Retrofit retrofit;
 
-    private int type;
+    private boolean treatingFavPokemon;
 
-    public WebService(Context c, ViewModel vm, int t){
+    public WebService(Context c, ViewModel vm, boolean treatingFavs){
         context = c;
         viewModel = vm;
-        type = t;
+        treatingFavPokemon = treatingFavs;
 
         gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -128,12 +129,11 @@ public class WebService {
                     sprite = ResourcesCompat.getDrawable(context.getResources(), R.drawable.pokemock, null);
                 }
                 pokemon.listSprite = sprite;
-                if(type == 0) {
+                if(!treatingFavPokemon) {
                     ((PokedexViewModel) viewModel).addPokemonToAll(pokemon);
-                }else if(type == 1){
+                }else{
                     ((PokedexViewModel) viewModel).addPokemonToFavs(pokemon);
                 }
-                //Log.d(TAG, "añadido sprite del pokemon "+pokemon.getId() + ", total añadidos: "+viewModel.getPokemonList().size());
             }
         });
         thread.start();

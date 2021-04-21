@@ -59,12 +59,12 @@ public class Repository {
     }
 
     public void getPokemonListFromRest(int pokemonCount){
-        WebService webService = new WebService(context, viewModel, 0);
+        WebService webService = new WebService(context, viewModel, false);
         webService.getPokemonFromJSON(pokemonCount);
     }
 
     public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs){
-        WebService webService = new WebService(context, viewModel, 1);
+        WebService webService = new WebService(context, viewModel, true);
         webService.getFavsFromJSON(pokemonIDs);
     }
 

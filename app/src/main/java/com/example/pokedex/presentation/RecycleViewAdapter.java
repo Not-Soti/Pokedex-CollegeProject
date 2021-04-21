@@ -31,16 +31,16 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     private PokedexViewModel viewModel;
     private ObservableArrayList<Pokemon> sourceList;
 
-    public  RecycleViewAdapter(Context c, PokedexViewModel vm, int type){
+    public  RecycleViewAdapter(Context c, PokedexViewModel vm, boolean isFavThing){
         context = c;
         viewModel = vm;
-        switch (type){
-            case 0:
-                sourceList = vm.getPokemonList();
-                break;
-            case 1:
-                sourceList = vm.getFavsList();
-                break;
+
+        if(!isFavThing){
+            //treating non-favourite pokemon
+            sourceList = vm.getPokemonList();
+        }else{
+            //trating favourte pokemon
+            sourceList = vm.getFavsList();
         }
     }
 
