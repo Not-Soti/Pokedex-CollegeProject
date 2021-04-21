@@ -2,7 +2,6 @@ package com.example.pokedex.Persistence;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModel;
@@ -20,6 +19,8 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,24 +36,29 @@ public class WebService {
     private Context context;
     private ViewModel viewModel;
 
-    public WebService(Context c, ViewModel vm){
+    private RestService restService;
+    private Gson gson;
+    private Retrofit retrofit;
+
+    private int type;
+
+    public WebService(Context c, ViewModel vm, int t){
         context = c;
         viewModel = vm;
-    }
+        type = t;
 
-    public void getPokemonFromJSON(int pokemonCount){
-
-        RestService restService;
-        Gson gson = new GsonBuilder()
+        gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl("https://pokeapi.co/api/v2/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         restService = retrofit.create(RestService.class);
+    }
 
+    public void getPokemonFromJSON(int pokemonCount){
         restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonListInfo>() {
             @Override
             public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
@@ -67,30 +73,36 @@ public class WebService {
                 for(PokemonListItem pokeInfo : lista) {
                     String[] url_split = pokeInfo.getUrl().split("/"); //El ID es el ultimo elemento de la URL
                     int id = Integer.parseInt(url_split[url_split.length-1]);
-
-                    //De esta peticion se obtiene el objeto Pokemon necesario con sus características
-                    restService.getPokemonById(id).enqueue(new Callback<Pokemon>() {
-                        @Override
-                        public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                            Pokemon pokemon = response.body();
-                            //viewModel.getPokemonList().add(pokemon);
-
-                            //Obtener las imagenes de sus tipos
-                            getTypeNames(pokemon);
-
-                            //Obtener su imagen para la lista
-                            getListSprite(pokemon);
-
-                        }
-                        @Override
-                        public void onFailure(Call<Pokemon> call, Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
+                    getPokemonByID(id);
                 }
             }
             @Override
             public void onFailure(Call<PokemonListInfo> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void getFavsFromJSON(HashSet<Integer> pokemonIDs){
+        for(int id : pokemonIDs){
+            getPokemonByID(id);
+        }
+    }
+    private void getPokemonByID(int id){
+        //De esta peticion se obtiene el objeto Pokemon necesario con sus características
+        restService.getPokemonById(id).enqueue(new Callback<Pokemon>() {
+            @Override
+            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
+                Pokemon pokemon = response.body();
+                //Obtener las imagenes de sus tipos
+                getTypeNames(pokemon);
+
+                //Obtener su imagen para la lista
+                getListSprite(pokemon);
+
+            }
+            @Override
+            public void onFailure(Call<Pokemon> call, Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -114,7 +126,11 @@ public class WebService {
                     sprite = ResourcesCompat.getDrawable(context.getResources(), R.drawable.pokemock, null);
                 }
                 pokemon.listSprite = sprite;
-                ((PokedexViewModel) viewModel).addPokemon(pokemon);
+                if(type == 0) {
+                    ((PokedexViewModel) viewModel).addPokemonToAll(pokemon);
+                }else if(type == 1){
+                    ((PokedexViewModel) viewModel).addPokemonToFavs(pokemon);
+                }
                 //Log.d(TAG, "añadido sprite del pokemon "+pokemon.getId() + ", total añadidos: "+viewModel.getPokemonList().size());
             }
         });

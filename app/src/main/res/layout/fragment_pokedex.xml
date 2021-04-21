@@ -6,9 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".presentation.PokedexFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/pokedexFrag_TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/pokedexFrag_tab_All"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pokédex" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/pokedexFrag_tabFav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favoritos" />
+
+        </com.google.android.material.tabs.TabLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/pokedexFrag_recyclerView"
@@ -19,5 +39,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </FrameLayout>

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.ObservableArrayList;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,11 +29,19 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
     private Context context;
     private String TAG = "RecycleViewAdapter";
     private PokedexViewModel viewModel;
+    private ObservableArrayList<Pokemon> sourceList;
 
-    public  RecycleViewAdapter(Context c, PokedexViewModel vm, List<Pokemon> pokeList){
+    public  RecycleViewAdapter(Context c, PokedexViewModel vm, int type){
         context = c;
-        //pokemonList = pokeList;
         viewModel = vm;
+        switch (type){
+            case 0:
+                sourceList = vm.getPokemonList();
+                break;
+            case 1:
+                sourceList = vm.getFavsList();
+                break;
+        }
     }
 
     @NonNull
@@ -44,7 +53,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull RecycleViewAdapter.ViewHolder holder, int position) {
-        Pokemon pokemon = viewModel.getPokemonList().get(position);
+        Pokemon pokemon = sourceList.get(position);
 
         //Nombre
         String name = pokemon.getName();
@@ -68,11 +77,11 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
             PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
         }
 
+        Log.d(TAG, "Pokemon " + pokemon.getId() + "es fav: " +pokemon.isFav);
+
         if(pokemon.isFav){
-            Log.d(TAG, "Es fav");
             holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
         }else{
-            Log.d(TAG, "NO Es fav");
             holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
         }
 
@@ -84,11 +93,13 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
                     pokemon.isFav=true;
                     repository.addFavPokemon(pokemon);
                     holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
+                    viewModel.addPokemonToFavs(pokemon);
                 }
                 else {
                     pokemon.isFav=false;
                     repository.removeFavPokemon(pokemon);
                     holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
+                    viewModel.removePokemonFromFavs(pokemon);
                 }
             }
         });
@@ -106,7 +117,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @Override
     public int getItemCount() {
-        return viewModel.getPokemonList().size();
+        return sourceList.size();
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder{

@@ -3,6 +3,8 @@ package com.example.pokedex.model.pokemonModel;
 
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
+
 import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
@@ -14,6 +16,18 @@ public class Pokemon {
     public Drawable listSprite; //Usado para guardar su imagen al descargarla
     public String type1Str, type2Str;
     public boolean isFav = false; //Indica si el pokemon esta marcado como favorito
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj == this){
+            return  true;
+        }
+        if(!(obj instanceof Pokedex)){
+            return false;
+        }
+        Pokemon poke = (Pokemon) obj;
+        return this.getId()==poke.getId();
+    }
 
     @SerializedName("abilities")
     @Expose

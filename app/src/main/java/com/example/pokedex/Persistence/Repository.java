@@ -31,6 +31,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,8 +59,13 @@ public class Repository {
     }
 
     public void getPokemonListFromRest(int pokemonCount){
-        WebService webService = new WebService(context, viewModel);
+        WebService webService = new WebService(context, viewModel, 0);
         webService.getPokemonFromJSON(pokemonCount);
+    }
+
+    public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs){
+        WebService webService = new WebService(context, viewModel, 1);
+        webService.getFavsFromJSON(pokemonIDs);
     }
 
     public HashSet<Integer> getFavouritePokemon(){

@@ -11,11 +11,6 @@
         android:label="fragment_host"
         tools:layout="@layout/fragment_host" >
         <action
-            android:id="@+id/action_hostFragment_to_pokedexFragment"
-            app:destination="@id/pokedexFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left" />
-        <action
             android:id="@+id/action_hostFragment_to_teamFragment"
             app:destination="@id/teamFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -23,6 +18,9 @@
         <action
             android:id="@+id/action_hostFragment_to_settingsActivity"
             app:destination="@id/settingsActivity" />
+        <action
+            android:id="@+id/action_hostFragment_to_pokedexFragment"
+            app:destination="@id/pokedexFragment" />
     </fragment>
     <fragment
         android:id="@+id/pokedexFragment"
