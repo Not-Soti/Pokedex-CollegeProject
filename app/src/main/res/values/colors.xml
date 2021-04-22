@@ -12,6 +12,10 @@
     <!-- Pokemon detail fragment -->
     <color name="poke_detail_divider_color">#898989</color>
 
+    <!-- Pokedex fragment -->
+    <color name="pokedex_list_background">#cacaca</color>
+    <color name="pokedex_card_background">#ffffff</color>
+
     <!-- Pokemon type colors -->
     <color name="type_steel">#D9DAC0</color>
     <color name="type_water">#727CFF</color>

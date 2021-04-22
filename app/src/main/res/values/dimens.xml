@@ -2,4 +2,6 @@
 <resources>
     <dimen name="poke_detail_name_textSize">24sp</dimen>
     <dimen name="poke_detail_flavorEntry_textSize">18sp</dimen>
+
+    <dimen name="poke_card_margin">4dp</dimen>
 </resources>

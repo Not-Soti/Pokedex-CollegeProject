@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@drawable/pokemon_card_border">
+    android:background="@drawable/pokemon_card_border"
+    android:layout_marginBottom="@dimen/poke_card_margin"
+    android:layout_marginLeft="@dimen/poke_card_margin"
+    android:layout_marginRight="@dimen/poke_card_margin">
 
     <ImageView
         android:id="@+id/pokeCard_sprite"
