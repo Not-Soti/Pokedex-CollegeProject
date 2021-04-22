@@ -24,68 +24,70 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+
     <TextView
         android:id="@+id/pokeCard_id_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="TextView"
-        android:textStyle="bold"
         android:textColor="@color/black"
-        app:layout_constraintStart_toEndOf="@+id/pokeCard_sprite"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/pokeCard_name_tv"
+        app:layout_constraintTop_toBottomOf="@+id/pokeCard_name_tv" />
 
     <TextView
         android:id="@+id/pokeCard_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:text="TextView"
         android:textColor="@color/black"
+        android:textSize="@dimen/poke_card_name_textSize"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/pokeCard_id_tv"
-        app:layout_constraintTop_toBottomOf="@+id/pokeCard_id_tv" />
+        app:layout_constraintStart_toEndOf="@+id/pokeCard_sprite"
+        app:layout_constraintTop_toTopOf="@+id/pokeCard_sprite" />
 
     <TextView
         android:id="@+id/pokeCard_aux"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginBottom="2dp"
         android:text="Tipos:"
         android:textColor="@color/black"
-        app:layout_constraintEnd_toStartOf="@+id/pokeCard_type1"
-        app:layout_constraintTop_toTopOf="@+id/pokeCard_name_tv" />
+        app:layout_constraintBottom_toBottomOf="@+id/pokeCard_sprite"
+        app:layout_constraintStart_toStartOf="@+id/pokeCard_id_tv" />
 
     <TextView
         android:id="@+id/pokeCard_type1"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="72dp"
-        android:layout_marginRight="72dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:gravity="center_horizontal"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/pokeCard_aux"
+        app:layout_constraintStart_toEndOf="@+id/pokeCard_aux"
         app:layout_constraintTop_toTopOf="@+id/pokeCard_aux" />
-
 
     <TextView
         android:id="@+id/pokeCard_type2"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:gravity="center_horizontal"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/pokeCard_type1"
-        app:layout_constraintTop_toBottomOf="@+id/pokeCard_type1" />
+        app:layout_constraintBottom_toBottomOf="@+id/pokeCard_type1"
+        app:layout_constraintStart_toEndOf="@+id/pokeCard_type1"
+        app:layout_constraintTop_toTopOf="@+id/pokeCard_type1" />
 
     <ImageButton
         android:id="@+id/pokeCard_fav_button"

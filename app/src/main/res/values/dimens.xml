@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Pokemon detail fragment -->
     <dimen name="poke_detail_name_textSize">24sp</dimen>
     <dimen name="poke_detail_flavorEntry_textSize">18sp</dimen>
+    <dimen name="poke_detail_base_textSize">16sp</dimen>
 
+    <!--Pokemon card -->
     <dimen name="poke_card_margin">4dp</dimen>
+    <dimen name="poke_card_name_textSize">24sp</dimen>
 </resources>

@@ -23,6 +23,12 @@
     <string name="title_activity_settings" translatable="false">SettingsActivity</string>
     <string name="poke_detail_height">Altura:</string>
     <string name="poke_detail_weight">Peso:</string>
+    <string name="stat_health">PS:</string>
+    <string name="stat_attack">Ataque:</string>
+    <string name="stat_defense">Defensa:</string>
+    <string name="stat_speAttack">Ataque especial:</string>
+    <string name="stat_speDefense">Defensa especial:</string>
+    <string name="stat_speed">Velocidad:</string>
 
 
 </resources>

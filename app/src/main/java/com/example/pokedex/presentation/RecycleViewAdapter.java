@@ -67,7 +67,7 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         holder.imageView.setBackground(pokemon.listSprite);
 
         //Tipos
-        String type1 = pokemon.type1Str;
+        /*String type1 = pokemon.type1Str;
         PresentationUtils.setTypeTextViewFormat(context,holder.type1Tv, type1);
         //Si no tiene segundo tipo, se hace invisible
         String type2 = pokemon.type2Str;
@@ -75,7 +75,13 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
         else {
             holder.type2Tv.setVisibility(View.VISIBLE);
             PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
-        }
+        }*/
+
+        String type1 = pokemon.type1Str;
+        PresentationUtils.setTypeTextViewFormat(context,holder.type1Tv, type1);
+        String type2 = pokemon.type2Str;
+        PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
+
 
         if(pokemon.isFav){
             holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));

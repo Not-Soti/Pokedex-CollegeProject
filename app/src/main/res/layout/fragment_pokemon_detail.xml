@@ -7,121 +7,127 @@
     android:layout_height="match_parent"
     tools:context=".presentation.PokemonDetailFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:id="@+id/poke_detail_sprite"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/poke_detail_nameTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Nombre"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="@dimen/poke_detail_name_textSize"
-            app:layout_constraintStart_toStartOf="@+id/poke_detail_sprite"
-            app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
+            <ImageView
+                android:id="@+id/poke_detail_sprite"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginRight="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/avatars" />
 
-        <TextView
-            android:id="@+id/poke_detail_idTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Nº"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:textSize="@dimen/poke_detail_name_textSize"
-            app:layout_constraintEnd_toEndOf="@+id/poke_detail_sprite"
-            app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
+            <TextView
+                android:id="@+id/poke_detail_nameTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nombre"
+                android:textColor="@color/black"
+                android:textSize="@dimen/poke_detail_name_textSize"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/divider"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="350dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/poke_detail_nameTv" />
+            <TextView
+                android:id="@+id/poke_detail_idTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nº"
+                android:textColor="@color/black"
+                android:textSize="@dimen/poke_detail_name_textSize"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/divider"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
 
-        <ScrollView
-            android:layout_width="350dp"
-            android:layout_height="300dp"
-            android:layout_marginTop="16dp"
-            android:fillViewport="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider">
+            <View
+                android:id="@+id/divider"
+                android:layout_width="350dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_nameTv" />
+
+            <TextView
+                android:id="@+id/poke_detail_flavorTextTv"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Descripcion"
+                android:textColor="@color/black"
+                android:textSize="@dimen/poke_detail_flavorEntry_textSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+            <TextView
+                android:id="@+id/poke_detail_heightTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/poke_detail_height"
+                android:textColor="@color/black"
+                android:textSize="@dimen/poke_detail_base_textSize"
+                app:layout_constraintStart_toStartOf="@+id/poke_detail_flavorTextTv"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
+
+            <TextView
+                android:id="@+id/poke_detail_weightTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/poke_detail_weight"
+                android:textColor="@color/black"
+                android:textSize="@dimen/poke_detail_base_textSize"
+                app:layout_constraintStart_toStartOf="@+id/poke_detail_heightTv"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_heightTv" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                android:id="@+id/constraintLayout"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:orientation="vertical"
-                android:padding="4dp">
-
-                <TextView
-                    android:id="@+id/poke_detail_flavorTextTv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Descripcion"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/poke_detail_weightTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/poke_detail_weight"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
-
-                <TextView
-                    android:id="@+id/poke_detail_heightTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/poke_detail_height"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/poke_detail_flavorEntry_textSize"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
+                android:padding="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_weightTv">
 
                 <TextView
                     android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="PS:"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/stat_health"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/poke_detail_heightTv" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Ataque:"
+                    android:text="@string/stat_attack"
                     app:layout_constraintStart_toStartOf="@+id/textView5"
                     app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
@@ -130,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Defensa:"
+                    android:text="@string/stat_defense"
                     app:layout_constraintStart_toStartOf="@+id/textView6"
                     app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
@@ -139,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Ataque especial:"
+                    android:text="@string/stat_speAttack"
                     app:layout_constraintStart_toStartOf="@+id/textView7"
                     app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -148,7 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Defensa especial:"
+                    android:text="@string/stat_speDefense"
                     app:layout_constraintStart_toStartOf="@+id/textView8"
                     app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
@@ -157,7 +163,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Velocidad:"
+                    android:text="@string/stat_speed"
                     app:layout_constraintStart_toStartOf="@+id/textView9"
                     app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -282,7 +288,41 @@
                     app:layout_constraintTop_toTopOf="@+id/poke_detail_speedBar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/poke_detail_type1Tv"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/poke_detail_flavorTextTv"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_flavorTextTv" />
+
+            <TextView
+                android:id="@+id/poke_detail_type2Tv"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="tipo2"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="@+id/poke_detail_type1Tv"
+                app:layout_constraintTop_toBottomOf="@+id/poke_detail_type1Tv"
+                android:gravity="center_horizontal" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
 </FrameLayout>

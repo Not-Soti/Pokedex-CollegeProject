@@ -22,6 +22,7 @@ import com.example.pokedex.model.pokemonModel.Language;
 import com.example.pokedex.model.pokemonModel.PokemonSpeciesDetail;
 import com.example.pokedex.model.pokemonModel.Stat;
 import com.example.pokedex.model.pokemonModel.Stat__1;
+import com.example.pokedex.model.pokemonModel.Type;
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.model.pokemonModel.Pokemon;
 import com.google.gson.Gson;
@@ -55,6 +56,8 @@ public class PokemonDetailFragment extends Fragment {
     private TextView nameTv, idTv;
     private TextView flavorTextTv;
     private TextView weighTv, heightTv;
+
+    private TextView type1Tv, type2Tv;
     
     private TextView healthTv, attackTv, speAttackTv, defenseTv, speDefenseTv, speedTv;
     private ProgressBar healthBar, attackBar, speAttackBar, defenseBar, speDefenseBar, speedBar;
@@ -100,6 +103,9 @@ public class PokemonDetailFragment extends Fragment {
         flavorTextTv = theView.findViewById(R.id.poke_detail_flavorTextTv);
         weighTv = theView.findViewById(R.id.poke_detail_weightTv);
         heightTv = theView.findViewById(R.id.poke_detail_heightTv);
+
+        type1Tv = theView.findViewById(R.id.poke_detail_type1Tv);
+        type2Tv = theView.findViewById(R.id.poke_detail_type2Tv);
         
         healthTv = theView.findViewById(R.id.poke_detail_healthTv);
         attackTv = theView.findViewById(R.id.poke_detail_attackTv);
@@ -165,6 +171,8 @@ public class PokemonDetailFragment extends Fragment {
                     double pokeWeight = ((double) pokemon.getWeight()) / 10;
                     String pokeWeightStr = getResources().getString(R.string.poke_detail_weight) + String.format(Locale.getDefault(), " %.02f Kg", pokeWeight);
                     weighTv.setText(pokeWeightStr);
+
+                    getTypeNames(pokemon);
 
                     getStats(pokemon);
                 }
@@ -279,5 +287,27 @@ public class PokemonDetailFragment extends Fragment {
             }
         });
         thread.start();
+    }
+
+    private void getTypeNames(Pokemon pokemon){
+        //Todos los pokemon tienen 1 tipo, y algunos tienen 2
+        //Obtener el nombre del primer tipo
+        List<Type> types = pokemon.getTypes();
+        Type type1 = types.get(0);
+        String type1Name = type1.getType().getName();
+        pokemon.type1Str = type1Name;
+
+        //Obtener el segundo, si tiene
+        if(types.size()==2){
+            Type type2 = types.get(1);
+            String type2Name = type2.getType().getName();
+            pokemon.type2Str = type2Name;
+            //Log.d(TAG,"tipo2 "+ type2Name);
+        }else{
+            pokemon.type2Str = null;
+        }
+
+        PresentationUtils.setTypeTextViewFormat(getContext(), type1Tv, pokemon.type1Str);
+        PresentationUtils.setTypeTextViewFormat(getContext(), type2Tv, pokemon.type2Str);
     }
 }
