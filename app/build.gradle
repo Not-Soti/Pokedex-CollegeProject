@@ -58,5 +58,10 @@ dependencies {
     /* Needed to avoid crash on retrofit.Build() */
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
+
+    /* Room database access */
+    def room_version = "2.2.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
     
 }

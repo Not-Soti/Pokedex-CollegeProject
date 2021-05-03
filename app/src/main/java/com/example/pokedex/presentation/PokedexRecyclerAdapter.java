@@ -2,7 +2,6 @@ package com.example.pokedex.presentation;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +18,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.R;
 
-import java.util.List;
 import java.util.Locale;
 
 import com.example.pokedex.model.pokemonModel.Pokemon;
 
-public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
+public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecyclerAdapter.ViewHolder> {
 
     private Context context;
     private String TAG = "RecycleViewAdapter";
     private PokedexViewModel viewModel;
     private ObservableArrayList<Pokemon> sourceList;
 
-    public  RecycleViewAdapter(Context c, PokedexViewModel vm, boolean isFavThing){
+    public PokedexRecyclerAdapter(Context c, PokedexViewModel vm, boolean isFavThing){
         context = c;
         viewModel = vm;
 
@@ -46,13 +44,13 @@ public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.
 
     @NonNull
     @Override
-    public RecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View theView = LayoutInflater.from(parent.getContext()).inflate(R.layout.pokemon_card, parent, false);
-        return new RecycleViewAdapter.ViewHolder(theView);
+    public PokedexRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View theView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_pokemon_list, parent, false);
+        return new PokedexRecyclerAdapter.ViewHolder(theView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecycleViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PokedexRecyclerAdapter.ViewHolder holder, int position) {
         Pokemon pokemon = sourceList.get(position);
 
         //Nombre

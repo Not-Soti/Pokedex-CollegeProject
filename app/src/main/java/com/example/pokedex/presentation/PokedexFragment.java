@@ -24,7 +24,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +33,7 @@ import java.util.Objects;
 public class PokedexFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private RecycleViewAdapter pokemonAdapter;
+    private PokedexRecyclerAdapter pokemonAdapter;
     private PokedexViewModel pokedexViewModel;
     private ProgressDialog progressDialog;
     private String TAG = "--PokedexFragment--";
@@ -216,14 +215,6 @@ public class PokedexFragment extends Fragment {
     }
 
     private void getPokemonFavs(){
-/*        //Descargar los pokemon si no se han descargado ya antes
-        updateFavSet();
-        if((pokedexViewModel.getFavsList().size() != favouritePokemonSet.size()) && (favouritePokemonSet.size() != 0)) {
-            downloadPokemonFavs();
-        }else{
-            //Si estan descargados se muestran en pantalla
-            populatePokemonAdapter(1);
-        }*/
         updateFavSet();
         if(pokedexViewModel.getFavsList().size() != favouritePokemonSet.size()){
             downloadPokemonFavs();
@@ -268,7 +259,7 @@ public class PokedexFragment extends Fragment {
                     Log.d(TAG, "Tamaño set de favoritos: " + favouritePokemonSet.size());
                     Log.d(TAG, "Tamaño de la lista de favoritos: " + pokedexViewModel.getFavsList().size());
                     if (progressDialog != null) progressDialog.dismiss();
-                    pokemonAdapter = new RecycleViewAdapter(getContext(), pokedexViewModel, treatingFavPokemon);
+                    pokemonAdapter = new PokedexRecyclerAdapter(getContext(), pokedexViewModel, treatingFavPokemon);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     recyclerView.setAdapter(pokemonAdapter);
                 }

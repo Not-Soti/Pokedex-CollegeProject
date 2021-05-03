@@ -8,6 +8,7 @@ import android.util.Log;
 
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pokedex.R;
@@ -31,6 +32,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -46,16 +48,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Repository {
 
+
     private String TAG = "--Repository--";
     private RestService restService;
     private Context context;
     private ViewModel viewModel;
+
+    private PokemonDAO pokemonDAO;
+    private LiveData<List<PokemonTeamEntity>> pokemonTeam;
 
     public static final String favFileName = "favourites";
 
     public Repository(Context c, ViewModel vm){
         context=c;
         viewModel = vm;
+
+        pokemonDAO = Database.getInstance(c).pokemonDAO();
+    }
+
+    public Repository(Context c){
+        context=c;
+
+        pokemonDAO = Database.getInstance(c).pokemonDAO();
+        pokemonTeam = pokemonDAO.getFullTeam();
     }
 
     public void getPokemonListFromRest(int pokemonCount){
@@ -158,4 +173,15 @@ public class Repository {
         }
         Log.d(TAG, "Pokemon elimiado. Hay "+favs.size());
     }
+
+    public LiveData<List<PokemonTeamEntity>> getPokemonTeam(){
+        return pokemonTeam;
+
+    }
+
+    public void insertPokemonInTeam(PokemonTeamEntity poke){
+        new InsertInTeamAsyncTask(pokemonDAO).execute(poke);
+
+    }
+
 }

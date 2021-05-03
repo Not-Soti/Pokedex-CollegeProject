@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.pokedex.Persistence.InsertInTeamAsyncTask;
+import com.example.pokedex.Persistence.PokemonTeamEntity;
+import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.presentation.PokedexViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
         String online = isOnline() ? "SI" : "NO";
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
-        Log.d("---","Online: ".concat(online) );
+        Log.d(TAG,"Online: ".concat(online) );
+
+
 
     }
 
