@@ -28,5 +28,6 @@ public interface PokemonDAO {
     @Query("DELETE FROM pokemon_table")
     public void deleteAll();
 
-
+    @Query("DELETE FROM pokemon_table WHERE id = :id")
+    public void removePokemonById(int id);
 }

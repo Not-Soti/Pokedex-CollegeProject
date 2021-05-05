@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,10 +26,12 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
     private ObservableArrayList<Pokemon> sourceList;
     private final LayoutInflater layoutInflater;
+    private TeamViewModel viewModel;
 
-    public TeamRecyclerAdapter(Context context, ObservableArrayList<Pokemon> source){
+    public TeamRecyclerAdapter(Context context, ObservableArrayList<Pokemon> source, TeamViewModel vm){
         layoutInflater = LayoutInflater.from(context);
         sourceList=source;
+        viewModel = vm;
     }
 
 
@@ -43,19 +46,23 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
     @Override
     public void onBindViewHolder(@NonNull TeamRecyclerAdapter.ViewHolder holder, int position) {
         //Log.d(TAG, "onBindViewHolder");
-        Pokemon poke = sourceList.get(position);
+        Pokemon pokemon = sourceList.get(position);
 
         //Log.d("-------adapter", "Pokenombre: "+poke.getName());
 
         //Nombre
-        holder.nameTv.setText(poke.getName());
+        holder.nameTv.setText(pokemon.getName());
 
         //Imagen
-        holder.imageView.setBackground(poke.listSprite);
+        holder.imageView.setBackground(pokemon.listSprite);
 
         //Movimientos
 
 
+        //Remove button listener
+        holder.removeButton.setOnClickListener(v -> {
+            viewModel.removeFromTeam(pokemon);
+        });
     }
 
     @Override
@@ -74,6 +81,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         public TextView nameTv;
         public ImageView imageView;
         public Spinner mov1Spi, mov2Spi, mov3Spi, mov4Spi;
+        public Button removeButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,6 +91,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
             mov2Spi = itemView.findViewById(R.id.card_team_mov2Spinner);
             mov3Spi = itemView.findViewById(R.id.card_team_mov3Spinner);
             mov4Spi = itemView.findViewById(R.id.card_team_mov4Spinner);
+            removeButton = itemView.findViewById(R.id.card_team_removeFromTeam_button);
         }
     }
 }

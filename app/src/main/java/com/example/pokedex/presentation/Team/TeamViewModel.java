@@ -47,4 +47,17 @@ public class TeamViewModel extends AndroidViewModel {
     public ObservableArrayList<Pokemon> getPokemonList() {
         return pokemonList;
     }
+
+    public void removeFromTeam(Pokemon pokemon) {
+        PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
+        pokemonDAO.setId(pokemon.getId());
+        repository.removePokemonFromTeam(pokemonDAO);
+
+        //Se busca el pokemon y se elimina de la lista
+        for(int i=0; i<pokemonList.size(); i++){
+            if(pokemonList.get(i).getId() == pokemon.getId()){
+                pokemonList.remove(i);
+            }
+        }
+    }
 }

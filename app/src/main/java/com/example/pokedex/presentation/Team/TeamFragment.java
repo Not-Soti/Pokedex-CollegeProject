@@ -101,6 +101,7 @@ public class TeamFragment extends Fragment {
 
                 //Si se han descargado todos los pokemon, se muestran
                 if(sender.size() == numberOfPokemon){
+                    isDownloading = false;
                     Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
                     populatePokemonAdapter();
                 }
@@ -110,7 +111,9 @@ public class TeamFragment extends Fragment {
             public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {}
 
             @Override
-            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {}
+            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                populatePokemonAdapter();
+            }
         });
 
         return theView;
@@ -141,7 +144,7 @@ public class TeamFragment extends Fragment {
 
             act.runOnUiThread(() -> {
                 if (progressDialog != null) progressDialog.dismiss();
-                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList());
+                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), viewModel);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             });

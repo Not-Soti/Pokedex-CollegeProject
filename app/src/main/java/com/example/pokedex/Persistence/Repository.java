@@ -168,4 +168,12 @@ public class Repository {
         e.apply();
     }
 
+    public void removePokemonFromTeam(PokemonTeamEntity poke){
+        new RemoveTeamAsyncTask(pokemonDAO).execute(poke);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = prefs.edit();
+        e.putInt("cantidad_equipo", prefs.getInt("cantidad_equipo", 0)-1);
+        e.apply();
+    }
+
 }
