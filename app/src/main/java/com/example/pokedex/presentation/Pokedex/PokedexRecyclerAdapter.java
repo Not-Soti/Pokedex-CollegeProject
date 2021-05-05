@@ -1,4 +1,4 @@
-package com.example.pokedex.presentation;
+package com.example.pokedex.presentation.Pokedex;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,9 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.R;
 
+import java.util.List;
 import java.util.Locale;
 
 import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.presentation.PokemonDetailFragment;
+import com.example.pokedex.presentation.PresentationUtils;
 
 public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecyclerAdapter.ViewHolder> {
 
@@ -29,17 +32,18 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
     private PokedexViewModel viewModel;
     private ObservableArrayList<Pokemon> sourceList;
 
-    public PokedexRecyclerAdapter(Context c, PokedexViewModel vm, boolean isFavThing){
+    public PokedexRecyclerAdapter(Context c, PokedexViewModel vm, ObservableArrayList<Pokemon> source){
         context = c;
         viewModel = vm;
+        sourceList = source;
 
-        if(!isFavThing){
+/*        if(!isFavThing){
             //treating non-favourite pokemon
             sourceList = vm.getPokemonList();
         }else{
             //trating favourte pokemon
             sourceList = vm.getFavsList();
-        }
+        }*/
     }
 
     @NonNull
@@ -65,16 +69,6 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         holder.imageView.setBackground(pokemon.listSprite);
 
         //Tipos
-        /*String type1 = pokemon.type1Str;
-        PresentationUtils.setTypeTextViewFormat(context,holder.type1Tv, type1);
-        //Si no tiene segundo tipo, se hace invisible
-        String type2 = pokemon.type2Str;
-        if(type2==null) holder.type2Tv.setVisibility(View.GONE);
-        else {
-            holder.type2Tv.setVisibility(View.VISIBLE);
-            PresentationUtils.setTypeTextViewFormat(context, holder.type2Tv, type2);
-        }*/
-
         String type1 = pokemon.type1Str;
         PresentationUtils.setTypeTextViewFormat(context,holder.type1Tv, type1);
         String type2 = pokemon.type2Str;
@@ -90,14 +84,11 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         holder.favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Repository repository = new Repository(context, viewModel);
                 if(!pokemon.isFav) {
-                    repository.addFavPokemon(pokemon);
                     viewModel.addPokemonToFavs(pokemon);
                     holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
                 }
                 else {
-                    repository.removeFavPokemon(pokemon);
                     viewModel.removePokemonFromFavs(pokemon);
                     holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
                 }
@@ -135,6 +126,7 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
             type2Tv = itemView.findViewById(R.id.pokeCard_type2);
             favButton = itemView.findViewById(R.id.pokeCard_fav_button);
         }
+
 
     }
 }

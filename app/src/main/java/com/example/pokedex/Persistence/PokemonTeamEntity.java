@@ -1,5 +1,7 @@
 package com.example.pokedex.Persistence;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -12,7 +14,6 @@ public class PokemonTeamEntity {
     private int id;
     private String nombre;
     private String mov1, mov2, mov3, mov4;
-
 
     public int getId() {
         return id;

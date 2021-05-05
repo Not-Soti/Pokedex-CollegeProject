@@ -1,10 +1,11 @@
-package com.example.pokedex.presentation;
+package com.example.pokedex.presentation.Pokedex;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,12 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pokedex.R;
-import com.example.pokedex.Persistence.Repository;
+import com.example.pokedex.model.pokemonModel.Pokedex;
 import com.example.pokedex.model.pokemonModel.Pokemon;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,15 +35,15 @@ public class PokedexFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private PokedexRecyclerAdapter pokemonAdapter;
-    private PokedexViewModel pokedexViewModel;
+    private PokedexViewModel viewModel;
     private ProgressDialog progressDialog;
     private String TAG = "--PokedexFragment--";
-    private Repository repository;
+    //private Repository repository;
     private TabLayout tabLayout;
 
     private int pokemonCount = 10;
     private int pokemonFavCount = 0;
-    private HashSet<Integer> favouritePokemonSet;
+    //private HashSet<Integer> favouritePokemonSet;
 
     public PokedexFragment() {
         // Required empty public constructor
@@ -75,14 +76,9 @@ public class PokedexFragment extends Fragment {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
-        /*
-                TODO *      CAMBIAR A LA SETTINGS ACTIVITY HACE QUE EL
-                TODO *      VIEWMODEL SE REINICIE PORQUE ESO, SE CAMBIA DE ACTIVITY
-         */
-
-        pokedexViewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class);
         //viewModel.getPokemonList().clear();
-        pokedexViewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
+        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
             @Override
             public void onChanged(ObservableList<Pokemon> sender) {
             }
@@ -92,10 +88,10 @@ public class PokedexFragment extends Fragment {
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
                 //updateFavSet();
-                if(favouritePokemonSet != null){
-                    if(favouritePokemonSet.contains(sender.get(positionStart).getId())){
+                if(viewModel.getFavPokemonIDs() != null){
+                    if(viewModel.getFavPokemonIDs().contains(sender.get(positionStart).getId())){
                         sender.get(positionStart).isFav = true;
-                        pokedexViewModel.addPokemonToFavs(sender.get(positionStart));
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
                     }else{
                         sender.get(positionStart).isFav = false;
                     }
@@ -104,8 +100,8 @@ public class PokedexFragment extends Fragment {
                     progressDialog.setProgress(sender.size());
                 }
                 if(sender.size() == pokemonCount){
-                    Collections.sort(pokedexViewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
-                    if(tabLayout.getSelectedTabPosition()==0){populatePokemonAdapter(false);}
+                    Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
+                    populatePokemonAdapter();
                 }
             }
             @Override
@@ -116,7 +112,7 @@ public class PokedexFragment extends Fragment {
             }
         });
 
-        pokedexViewModel.getFavsList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
+        viewModel.getFavsList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
             @Override
             public void onChanged(ObservableList<Pokemon> sender) {
 
@@ -133,11 +129,11 @@ public class PokedexFragment extends Fragment {
                     progressDialog.setProgress(sender.size());
                 }
 
-                updateFavSet();
-                if(pokedexViewModel.getFavsList().size() == favouritePokemonSet.size()) {
-                    Collections.sort(pokedexViewModel.getFavsList(), (p1, p2) -> p1.getId() - p2.getId());
+                //updateFavSet(); //TODO A VER POR QUE
+                if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
+                    Collections.sort(viewModel.getFavsList(), (p1, p2) -> p1.getId() - p2.getId());
                     if (tabLayout.getSelectedTabPosition() == 1) {
-                        populatePokemonAdapter(true);
+                        populatePokemonAdapter();
                     }
                 }
 
@@ -149,15 +145,17 @@ public class PokedexFragment extends Fragment {
             }
             @Override
             public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                updateFavSet();
-                if(tabLayout.getSelectedTabPosition()==1){populatePokemonAdapter(true);}
+                //updateFavSet(); //TODO LO MISMO
+                if (tabLayout.getSelectedTabPosition() == 1) {
+                    populatePokemonAdapter();
+                }
             }
         });
 
         recyclerView = theView.findViewById(R.id.pokedexFrag_recyclerView);
         tabLayout = theView.findViewById(R.id.pokedexFrag_TabLayout);
 
-        repository = new Repository(getContext(), pokedexViewModel);
+        //repository = new Repository(getContext(), pokedexViewModel);
 
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -193,33 +191,29 @@ public class PokedexFragment extends Fragment {
         pokemonCount=number;
 
 
-        updateFavSet();
+        //updateFavSet(); se obtiene al creal el viewModel
         getPokemonAll();
 
         return theView;
     }
 
-    private void updateFavSet(){
-        favouritePokemonSet = repository.getFavouritePokemon();
-    }
 
     private void getPokemonAll(){
-        updateFavSet();
         //Descargar los pokemon si no se han descargado ya antes
-        if(pokedexViewModel.getPokemonList().isEmpty()) {
+        if(viewModel.getPokemonList().isEmpty()) {
             downloadPokemonAll();
         }else{
             //Si estan descargados se muestran en pantalla
-            populatePokemonAdapter(false);
+            populatePokemonAdapter();
         }
     }
 
     private void getPokemonFavs(){
-        updateFavSet();
-        if(pokedexViewModel.getFavsList().size() != favouritePokemonSet.size()){
+        //updateFavSet(); //TODO A VER BRO
+        if(viewModel.getFavsList().size() != viewModel.getFavPokemonIDs().size()){
             downloadPokemonFavs();
         }else {
-            populatePokemonAdapter(true);
+            populatePokemonAdapter();
         }
     }
 
@@ -234,7 +228,7 @@ public class PokedexFragment extends Fragment {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setMax(pokemonCount);
         progressDialog.show();
-        repository.getPokemonListFromRest(pokemonCount);
+        viewModel.updatePokemonList(pokemonCount);
     }
 
     private void downloadPokemonFavs(){
@@ -244,25 +238,40 @@ public class PokedexFragment extends Fragment {
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setMax(favouritePokemonSet.size());
+        progressDialog.setMax(viewModel.getFavPokemonIDs().size());
         progressDialog.show();
-        repository.getPokemonFavsFromRest(favouritePokemonSet);
+        viewModel.updateFavList();
     }
 
-    public void populatePokemonAdapter(boolean treatingFavPokemon){
+    /**
+     * Puebla el adaptador con los pokemon necesarios
+     */
+    public void populatePokemonAdapter(){
         Activity act = getActivity();
         if(isAdded() && (act != null)) {
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //Log.d(TAG, "tam: " + viewModel.getPokemonList().size());
-                    Log.d(TAG, "Tamaño set de favoritos: " + favouritePokemonSet.size());
-                    Log.d(TAG, "Tamaño de la lista de favoritos: " + pokedexViewModel.getFavsList().size());
-                    if (progressDialog != null) progressDialog.dismiss();
-                    pokemonAdapter = new PokedexRecyclerAdapter(getContext(), pokedexViewModel, treatingFavPokemon);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                    recyclerView.setAdapter(pokemonAdapter);
-                }
+
+            /*Dependiendo de la pestaña seleccionada, se previsualizan todos
+              los pokemon o solo los favoritos */
+            ObservableArrayList<Pokemon> pokemonList;
+            switch (tabLayout.getSelectedTabPosition()){
+                case 0:
+                    pokemonList = viewModel.getPokemonList();
+                    break;
+                case 1:
+                    pokemonList = viewModel.getFavsList();
+                    break;
+                default:
+                    pokemonList = viewModel.getPokemonList();
+                    break;
+            }
+
+            act.runOnUiThread(() -> {
+                Log.d(TAG, "Tamaño set de favoritos: " + viewModel.getFavPokemonIDs().size());
+                Log.d(TAG, "Tamaño de la lista de favoritos: " + viewModel.getFavsList().size());
+                if (progressDialog != null) progressDialog.dismiss();
+                pokemonAdapter = new PokedexRecyclerAdapter(getContext(), viewModel, pokemonList);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerView.setAdapter(pokemonAdapter);
             });
         }
     }

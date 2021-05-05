@@ -25,6 +25,7 @@ import com.example.pokedex.model.pokemonModel.Stat__1;
 import com.example.pokedex.model.pokemonModel.Type;
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.presentation.Pokedex.PokedexViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

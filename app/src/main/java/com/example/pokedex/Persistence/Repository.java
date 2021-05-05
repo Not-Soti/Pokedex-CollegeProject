@@ -1,50 +1,26 @@
 package com.example.pokedex.Persistence;
 
 
-import android.app.ProgressDialog;
+import android.app.Application;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.pokedex.R;
 import com.example.pokedex.model.pokemonModel.Pokemon;
-import com.example.pokedex.model.pokemonModel.PokemonListInfo;
-import com.example.pokedex.model.pokemonModel.PokemonListItem;
-import com.example.pokedex.model.pokemonModel.Type;
 import com.example.pokedex.netAccess.RestService;
-import com.example.pokedex.presentation.PokedexFragment;
-import com.example.pokedex.presentation.PokedexViewModel;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Repository {
 
@@ -52,37 +28,43 @@ public class Repository {
     private String TAG = "--Repository--";
     private RestService restService;
     private Context context;
-    private ViewModel viewModel;
+    //private ViewModel viewModel;
+    //private Application application;
 
     private PokemonDAO pokemonDAO;
     private LiveData<List<PokemonTeamEntity>> pokemonTeam;
 
     public static final String favFileName = "favourites";
 
-    public Repository(Context c, ViewModel vm){
+    /*public Repository(Context c, ViewModel vm){
         context=c;
         viewModel = vm;
 
         pokemonDAO = Database.getInstance(c).pokemonDAO();
-    }
+    }*/
 
-    public Repository(Context c){
-        context=c;
+    public Repository(Application app){
+        context = app.getApplicationContext();
 
-        pokemonDAO = Database.getInstance(c).pokemonDAO();
+        pokemonDAO = Database.getInstance(app).pokemonDAO();
         pokemonTeam = pokemonDAO.getFullTeam();
     }
 
-    public void getPokemonListFromRest(int pokemonCount){
-        WebService webService = new WebService(context, viewModel, false);
-        webService.getPokemonFromJSON(pokemonCount);
+    public void getPokemonListFromRest(int pokemonCount, List<Pokemon> pokemonList){
+        WebService webService = new WebService(context);
+        webService.getPokemonFromJSON(pokemonCount, pokemonList);
     }
 
-    public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs){
-        WebService webService = new WebService(context, viewModel, true);
-        webService.getFavsFromJSON(pokemonIDs);
+    public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
+        WebService webService = new WebService(context);
+        webService.getFavsFromJSON(pokemonIDs, pokemonList);
     }
 
+    /**
+     * Metodo utilizado para obtener los id de los
+     * Pokemon que se han marcado como favoritos
+     * @return HashSet conteniendo los id de los pokemon favoritos
+     */
     public HashSet<Integer> getFavouritePokemon(){
         //Obtener los que ya estaban guardados
         FileInputStream fis;
@@ -179,9 +161,8 @@ public class Repository {
 
     }
 
-    public void insertPokemonInTeam(PokemonTeamEntity poke){
+    public void insertPokemonIntoTeam(PokemonTeamEntity poke){
         new InsertInTeamAsyncTask(pokemonDAO).execute(poke);
-
     }
 
 }

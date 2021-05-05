@@ -1,6 +1,5 @@
 package com.example.pokedex.Persistence;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -14,14 +13,13 @@ import com.example.pokedex.model.pokemonModel.PokemonListInfo;
 import com.example.pokedex.model.pokemonModel.PokemonListItem;
 import com.example.pokedex.model.pokemonModel.Type;
 import com.example.pokedex.netAccess.RestService;
-import com.example.pokedex.presentation.PokedexViewModel;
+import com.example.pokedex.presentation.Pokedex.PokedexViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,18 +34,18 @@ public class WebService {
 
     private String TAG = "--WebService--";
     private Context context;
-    private ViewModel viewModel;
+    //private ViewModel viewModel;
 
     private RestService restService;
     private Gson gson;
     private Retrofit retrofit;
 
-    private boolean treatingFavPokemon;
+    //private boolean treatingFavPokemon;
 
-    public WebService(Context c, ViewModel vm, boolean treatingFavs){
+    public WebService(Context c){
         context = c;
-        viewModel = vm;
-        treatingFavPokemon = treatingFavs;
+        //viewModel = vm;
+        //treatingFavPokemon = treatingFavs;
 
         gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -60,7 +58,7 @@ public class WebService {
         restService = retrofit.create(RestService.class);
     }
 
-    public void getPokemonFromJSON(int pokemonCount){
+    public void getPokemonFromJSON(int pokemonCount, List<Pokemon> pokemonList){
         restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonListInfo>() {
             @Override
             public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
@@ -75,7 +73,8 @@ public class WebService {
                 for(PokemonListItem pokeInfo : lista) {
                     String[] url_split = pokeInfo.getUrl().split("/"); //El ID es el ultimo elemento de la URL
                     int id = Integer.parseInt(url_split[url_split.length-1]);
-                    getPokemonByID(id);
+
+                    getPokemonByID(id, pokemonList);
                 }
             }
             @Override
@@ -85,13 +84,14 @@ public class WebService {
         });
     }
 
-    public void getFavsFromJSON(HashSet<Integer> pokemonIDs){
+    public void getFavsFromJSON(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
         for(int id : pokemonIDs){
             Log.d(TAG, "getFavsFromJSON id "+ id);
-            getPokemonByID(id);
+            getPokemonByID(id, pokemonList);
         }
     }
-    private void getPokemonByID(int id){
+    private void getPokemonByID(int id, List<Pokemon> pokemonList){
+
         //De esta peticion se obtiene el objeto Pokemon necesario con sus características
         restService.getPokemonById(id).enqueue(new Callback<Pokemon>() {
             @Override
@@ -101,7 +101,7 @@ public class WebService {
                 getTypeNames(pokemon);
 
                 //Obtener su imagen para la lista
-                getListSprite(pokemon);
+                getListSprite(pokemon, pokemonList);
 
             }
             @Override
@@ -111,7 +111,7 @@ public class WebService {
         });
     }
 
-    private void getListSprite(Pokemon pokemon){
+    private void getListSprite(Pokemon pokemon, List<Pokemon> pokemonList){
         //Se obtiene su imagen de la URL apropiada en un hilo nuevo
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -129,11 +129,13 @@ public class WebService {
                     sprite = ResourcesCompat.getDrawable(context.getResources(), R.drawable.pokemock, null);
                 }
                 pokemon.listSprite = sprite;
-                if(!treatingFavPokemon) {
-                    ((PokedexViewModel) viewModel).addPokemonToAll(pokemon);
+/*                if(!treatingFavPokemon) {
+                    //((PokedexViewModel) viewModel).addPokemonToAll(pokemon);
+
                 }else{
-                    ((PokedexViewModel) viewModel).addPokemonToFavs(pokemon);
-                }
+                    //((PokedexViewModel) viewModel).addPokemonToFavs(pokemon);
+                }*/
+                addPokemonToList(pokemonList, pokemon);
             }
         });
         thread.start();
@@ -156,5 +158,10 @@ public class WebService {
         }else{
             pokemon.type2Str = null;
         }
+    }
+
+
+    private synchronized void addPokemonToList(List<Pokemon> pokemonList, Pokemon pokemon){
+        pokemonList.add(pokemon);
     }
 }

@@ -89,6 +89,7 @@ public abstract class Database extends RoomDatabase {
 
                 Database.INSTANCE.pokemonDAO().insertPokemon(poke);
             }
+            Log.d("---", "Añadidos");
             return null;
         }
     }

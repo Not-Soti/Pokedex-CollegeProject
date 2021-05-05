@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/pokedexFragment"
-        android:name="com.example.pokedex.presentation.PokedexFragment"
+        android:name="com.example.pokedex.presentation.Pokedex.PokedexFragment"
         android:label="fragment_pokedex"
         tools:layout="@layout/fragment_pokedex" >
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/teamFragment"
-        android:name="com.example.pokedex.presentation.TeamFragment"
+        android:name="com.example.pokedex.presentation.Team.TeamFragment"
         android:label="fragment_team"
         tools:layout="@layout/fragment_team" />
     <activity

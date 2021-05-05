@@ -10,10 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.pokedex.Persistence.InsertInTeamAsyncTask;
-import com.example.pokedex.Persistence.PokemonTeamEntity;
-import com.example.pokedex.Persistence.Repository;
-import com.example.pokedex.presentation.PokedexViewModel;
+import com.example.pokedex.presentation.Pokedex.PokedexViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
