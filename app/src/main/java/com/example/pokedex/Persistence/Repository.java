@@ -3,13 +3,14 @@ package com.example.pokedex.Persistence;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
-import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.netAccess.RestService;
 
 import java.io.File;
@@ -36,13 +37,6 @@ public class Repository {
 
     public static final String favFileName = "favourites";
 
-    /*public Repository(Context c, ViewModel vm){
-        context=c;
-        viewModel = vm;
-
-        pokemonDAO = Database.getInstance(c).pokemonDAO();
-    }*/
-
     public Repository(Application app){
         context = app.getApplicationContext();
 
@@ -58,6 +52,11 @@ public class Repository {
     public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
         WebService webService = new WebService(context);
         webService.getFavsFromJSON(pokemonIDs, pokemonList);
+    }
+
+    public void downloadPokemonFromId(int id, List<Pokemon> pokemonList){
+        WebService webService = new WebService(context);
+        webService.getPokemonByID(id, pokemonList);
     }
 
     /**
@@ -158,11 +157,15 @@ public class Repository {
 
     public LiveData<List<PokemonTeamEntity>> getPokemonTeam(){
         return pokemonTeam;
-
     }
 
     public void insertPokemonIntoTeam(PokemonTeamEntity poke){
         new InsertInTeamAsyncTask(pokemonDAO).execute(poke);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = prefs.edit();
+        e.putInt("cantidad_equipo", prefs.getInt("cantidad_equipo", 0)+1);
+        e.apply();
     }
 
 }

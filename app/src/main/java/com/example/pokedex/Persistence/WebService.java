@@ -5,15 +5,13 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.ViewModel;
 
 import com.example.pokedex.R;
-import com.example.pokedex.model.pokemonModel.Pokemon;
-import com.example.pokedex.model.pokemonModel.PokemonListInfo;
-import com.example.pokedex.model.pokemonModel.PokemonListItem;
-import com.example.pokedex.model.pokemonModel.Type;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.PokemonIndex;
+import com.example.pokedex.model.pokeApiModel.PokemonIndexItem;
+import com.example.pokedex.model.pokeApiModel.Type;
 import com.example.pokedex.netAccess.RestService;
-import com.example.pokedex.presentation.Pokedex.PokedexViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -59,18 +57,18 @@ public class WebService {
     }
 
     public void getPokemonFromJSON(int pokemonCount, List<Pokemon> pokemonList){
-        restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonListInfo>() {
+        restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonIndex>() {
             @Override
-            public void onResponse(Call<PokemonListInfo> call, Response<PokemonListInfo> response) {
+            public void onResponse(Call<PokemonIndex> call, Response<PokemonIndex> response) {
 
-                PokemonListInfo pokemonListInfo = response.body();
+                PokemonIndex pokemonIndex = response.body();
 
 
                 //Lista con nombre y URL de cada pokemon
-                LinkedList<PokemonListItem> lista = new LinkedList<>(pokemonListInfo.getPokemonListItems());
+                LinkedList<PokemonIndexItem> lista = new LinkedList<>(pokemonIndex.getPokemonIndexItems());
 
                 //Para cada uno se obtiene su ID de la url dada
-                for(PokemonListItem pokeInfo : lista) {
+                for(PokemonIndexItem pokeInfo : lista) {
                     String[] url_split = pokeInfo.getUrl().split("/"); //El ID es el ultimo elemento de la URL
                     int id = Integer.parseInt(url_split[url_split.length-1]);
 
@@ -78,7 +76,7 @@ public class WebService {
                 }
             }
             @Override
-            public void onFailure(Call<PokemonListInfo> call, Throwable t) {
+            public void onFailure(Call<PokemonIndex> call, Throwable t) {
                 t.printStackTrace();
             }
         });
@@ -90,7 +88,8 @@ public class WebService {
             getPokemonByID(id, pokemonList);
         }
     }
-    private void getPokemonByID(int id, List<Pokemon> pokemonList){
+
+    public void getPokemonByID(int id, List<Pokemon> pokemonList){
 
         //De esta peticion se obtiene el objeto Pokemon necesario con sus características
         restService.getPokemonById(id).enqueue(new Callback<Pokemon>() {

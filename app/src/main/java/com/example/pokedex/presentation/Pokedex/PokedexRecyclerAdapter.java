@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,13 +16,11 @@ import androidx.databinding.ObservableArrayList;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.R;
 
-import java.util.List;
 import java.util.Locale;
 
-import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.presentation.PokemonDetailFragment;
 import com.example.pokedex.presentation.PresentationUtils;
 
@@ -81,27 +80,25 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
             holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
         }
 
-        holder.favButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!pokemon.isFav) {
-                    viewModel.addPokemonToFavs(pokemon);
-                    holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
-                }
-                else {
-                    viewModel.removePokemonFromFavs(pokemon);
-                    holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
-                }
+        holder.favButton.setOnClickListener(v -> {
+            if(!pokemon.isFav) {
+                viewModel.addPokemonToFavs(pokemon);
+                holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
+            }
+            else {
+                viewModel.removePokemonFromFavs(pokemon);
+                holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
             }
         });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(PokemonDetailFragment.PARAM_POKEMON_ID, pokemon.getId());
-                Navigation.findNavController(v).navigate(R.id.action_pokedexFragment_to_pokemonDetailFragment,bundle);
-            }
+        holder.addToTeamButton.setOnClickListener(v -> {
+            viewModel.addPokemonToTeam(pokemon);
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt(PokemonDetailFragment.PARAM_POKEMON_ID, pokemon.getId());
+            Navigation.findNavController(v).navigate(R.id.action_pokedexFragment_to_pokemonDetailFragment,bundle);
         });
 
     }
@@ -116,6 +113,7 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         public TextView nameTv, pokedexNumTv, type1Tv, type2Tv;
         public ImageView imageView;
         public ImageButton favButton;
+        public Button addToTeamButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -125,6 +123,7 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
             type1Tv = itemView.findViewById(R.id.pokeCard_type1);
             type2Tv = itemView.findViewById(R.id.pokeCard_type2);
             favButton = itemView.findViewById(R.id.pokeCard_fav_button);
+            addToTeamButton = itemView.findViewById(R.id.pokeCard_addToTeam_button);
         }
 
 

@@ -44,7 +44,7 @@ public abstract class Database extends RoomDatabase {
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
 
-            new PopulateDBAsync(INSTANCE).execute();
+            //new PopulateDBAsync(INSTANCE).execute();
         }
     };
 
@@ -78,7 +78,7 @@ public abstract class Database extends RoomDatabase {
         protected Void doInBackground(Void... voids) {
             pokeDao.deleteAll();
 
-            for(int i=1; i<=6; i++) {
+            for(int i=1; i<=30; i++) {
                 PokemonTeamEntity poke = new PokemonTeamEntity();
                 poke.setId(i);
                 poke.setNombre("Nombre del poke "+i);

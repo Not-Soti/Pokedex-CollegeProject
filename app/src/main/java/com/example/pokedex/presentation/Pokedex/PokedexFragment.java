@@ -19,12 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.pokedex.R;
-import com.example.pokedex.model.pokemonModel.Pokedex;
-import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -129,7 +127,6 @@ public class PokedexFragment extends Fragment {
                     progressDialog.setProgress(sender.size());
                 }
 
-                //updateFavSet(); //TODO A VER POR QUE
                 if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
                     Collections.sort(viewModel.getFavsList(), (p1, p2) -> p1.getId() - p2.getId());
                     if (tabLayout.getSelectedTabPosition() == 1) {

@@ -2,8 +2,10 @@ package com.example.pokedex;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -27,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
         String online = isOnline() ? "SI" : "NO";
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
         Log.d(TAG,"Online: ".concat(online) );
-
-
 
     }
 

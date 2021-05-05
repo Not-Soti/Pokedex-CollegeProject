@@ -102,4 +102,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_fav_off" />
 
+    <Button
+        android:id="@+id/pokeCard_addToTeam_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="add to team"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.Persistence.Repository;
-import com.example.pokedex.model.pokemonModel.Pokedex;
-import com.example.pokedex.model.pokemonModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
 
 import java.util.HashSet;
 
@@ -106,5 +106,12 @@ public class PokedexViewModel extends AndroidViewModel {
 
     public HashSet<Integer> getFavPokemonIDs() {
         return favPokemonIDs;
+    }
+
+    public void addPokemonToTeam(Pokemon pokemon) {
+        PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
+        pokemonDAO.setId(pokemon.getId());
+        pokemonDAO.setNombre(pokemon.getName());
+        repository.insertPokemonIntoTeam(pokemonDAO);
     }
 }

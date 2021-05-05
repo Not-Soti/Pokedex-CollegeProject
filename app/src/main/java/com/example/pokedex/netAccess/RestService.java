@@ -1,8 +1,8 @@
 package com.example.pokedex.netAccess;
 
-import com.example.pokedex.model.pokemonModel.PokemonListInfo;
-import com.example.pokedex.model.pokemonModel.Pokemon;
-import com.example.pokedex.model.pokemonModel.PokemonSpeciesDetail;
+import com.example.pokedex.model.pokeApiModel.PokemonIndex;
+import com.example.pokedex.model.pokeApiModel.Pokemon;
+import com.example.pokedex.model.pokeApiModel.PokemonSpeciesDetail;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -28,7 +28,7 @@ public interface RestService {
      * la información de cada Pokemon
      */
     @GET("pokemon/")
-    Call<PokemonListInfo> getPokemonList(@Query("limit") int count);
+    Call<PokemonIndex> getPokemonList(@Query("limit") int count);
 
     /**
      * Metodo que obtiene el JSON con la descripcion textual de cada pokemon
