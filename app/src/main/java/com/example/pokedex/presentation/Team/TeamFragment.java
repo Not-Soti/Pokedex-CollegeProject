@@ -33,7 +33,7 @@ import java.util.Objects;
  * Use the {@link TeamFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TeamFragment extends Fragment {
+public class TeamFragment extends Fragment{
 
     // TODO: Rename and change types of parameters
     private RecyclerView recyclerView;
@@ -43,6 +43,21 @@ public class TeamFragment extends Fragment {
     private ProgressDialog progressDialog;
 
     private boolean isDownloading = false;
+
+    private SpinnerSelectedListener spinnerSelectedListener = new SpinnerSelectedListener() {
+        @Override
+        public void onItemSelected(Pokemon pokemon, String nombre, String[] moves) {
+            Log.d(TAG, "ItemSelected del fragment");
+            viewModel.updatePokemon(pokemon.getId(), nombre, moves);
+        }
+
+        @Override
+        public void onNothingSelected() {
+
+        }
+    };
+
+
 
     public TeamFragment() {
         // Required empty public constructor
@@ -101,7 +116,7 @@ public class TeamFragment extends Fragment {
 
                 //Si se han descargado todos los pokemon, se muestran
                 if(sender.size() == numberOfPokemon){
-                    isDownloading = false;
+                    //isDownloading = false;
                     Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
                     populatePokemonAdapter();
                 }
@@ -144,10 +159,11 @@ public class TeamFragment extends Fragment {
 
             act.runOnUiThread(() -> {
                 if (progressDialog != null) progressDialog.dismiss();
-                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), viewModel);
+                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), viewModel, spinnerSelectedListener);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             });
         }
     }
+
 }

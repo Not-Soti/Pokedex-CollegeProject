@@ -176,4 +176,8 @@ public class Repository {
         e.apply();
     }
 
+    public void updatePokemonInTeam(PokemonTeamEntity poke){
+        new UpdateInTeamAsyncTask(pokemonDAO).execute(poke);
+    }
+
 }

@@ -114,4 +114,10 @@ public class PokedexViewModel extends AndroidViewModel {
         pokemonDAO.setNombre(pokemon.getName());
         repository.insertPokemonIntoTeam(pokemonDAO);
     }
+
+    public void removeFromTeam(Pokemon pokemon) {
+        PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
+        pokemonDAO.setId(pokemon.getId());
+        repository.removePokemonFromTeam(pokemonDAO);
+    }
 }

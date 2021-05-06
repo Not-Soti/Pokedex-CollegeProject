@@ -14,20 +14,29 @@ import java.util.List;
 public interface PokemonDAO {
 
     @Insert
-    public void insertPokemon(PokemonTeamEntity pokemon);
+    void insertPokemon(PokemonTeamEntity pokemon);
 
     @Delete
-    public void deletePokemon(PokemonTeamEntity pokemon);
+    void deletePokemon(PokemonTeamEntity pokemon);
 
     @Query("SELECT * FROM pokemon_table")
-    public LiveData<List<PokemonTeamEntity>> getFullTeam();
+    LiveData<List<PokemonTeamEntity>> getFullTeam();
 
     @Query("SELECT * FROM pokemon_table WHERE id = :id")
-    public LiveData<PokemonTeamEntity> getPokemonById(int id);
+    LiveData<PokemonTeamEntity> getPokemonById(int id);
 
     @Query("DELETE FROM pokemon_table")
-    public void deleteAll();
+    void deleteAll();
 
     @Query("DELETE FROM pokemon_table WHERE id = :id")
-    public void removePokemonById(int id);
+    void removePokemonById(int id);
+
+    @Query("UPDATE pokemon_table SET " +
+            "nombre = :name," +
+            "mov1 = :mov1," +
+            "mov2 = :mov2," +
+            "mov3 = :mov3," +
+            "mov4 = :mov4 " +
+            "WHERE id = :id")
+    void updatePokemon(int id, String name, String mov1, String mov2, String mov3, String mov4);
 }

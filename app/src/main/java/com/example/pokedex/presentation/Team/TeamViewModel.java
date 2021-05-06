@@ -60,4 +60,16 @@ public class TeamViewModel extends AndroidViewModel {
             }
         }
     }
+
+    public void updatePokemon(int id, String nombre, String[] moves) {
+        PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
+        pokemonDAO.setId(id);
+        pokemonDAO.setNombre(nombre);
+        pokemonDAO.setMov1(moves[0]);
+        pokemonDAO.setMov2(moves[1]);
+        pokemonDAO.setMov3(moves[2]);
+        pokemonDAO.setMov4(moves[3]);
+        
+        repository.updatePokemonInTeam(pokemonDAO);
+    }
 }
