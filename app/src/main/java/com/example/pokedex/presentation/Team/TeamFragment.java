@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.R;
@@ -44,6 +45,7 @@ public class TeamFragment extends Fragment{
 
     private boolean isDownloading = false;
 
+    //Listener utilizado para actualizar un pokemon en la BBDD cuando se elige otro movimiento
     private SpinnerSelectedListener spinnerSelectedListener = new SpinnerSelectedListener() {
         @Override
         public void onItemSelected(Pokemon pokemon, String nombre, String[] moves) {
@@ -57,7 +59,13 @@ public class TeamFragment extends Fragment{
         }
     };
 
-
+    //Listener utilizado para eliminar un pokemon de la BBDD cuando se clica el botón adecuado
+    private DeleteButtonListener removeButtonListener = new DeleteButtonListener() {
+        @Override
+        public void onClick(Pokemon pokemon) {
+            viewModel.removeFromTeam(pokemon);
+        }
+    };
 
     public TeamFragment() {
         // Required empty public constructor
@@ -92,7 +100,6 @@ public class TeamFragment extends Fragment{
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         int numberOfPokemon = prefs.getInt("cantidad_equipo", 0);
-        Log.d(TAG, "number of pokemon: "+numberOfPokemon);
 
         viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
             if((!isDownloading) && (viewModel.getPokemonTeam().getValue().size()==numberOfPokemon) && (numberOfPokemon!=0)) {
@@ -159,7 +166,7 @@ public class TeamFragment extends Fragment{
 
             act.runOnUiThread(() -> {
                 if (progressDialog != null) progressDialog.dismiss();
-                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), viewModel, spinnerSelectedListener);
+                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), spinnerSelectedListener, removeButtonListener);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             });

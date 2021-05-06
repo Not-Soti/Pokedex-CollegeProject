@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
@@ -36,12 +37,31 @@ public class PokedexFragment extends Fragment {
     private PokedexViewModel viewModel;
     private ProgressDialog progressDialog;
     private String TAG = "--PokedexFragment--";
-    //private Repository repository;
     private TabLayout tabLayout;
 
     private int pokemonCount = 10;
-    private int pokemonFavCount = 0;
-    //private HashSet<Integer> favouritePokemonSet;
+
+    private ButtonFavListener favListener = new ButtonFavListener() {
+        @Override
+        public void onClick(Pokemon pokemon, boolean isFav) {
+            if(!pokemon.isFav) {
+                viewModel.addPokemonToFavs(pokemon);
+            }else {
+                viewModel.removePokemonFromFavs(pokemon);
+            }
+        }
+    };
+
+    private ButtonTeamListener teamListener = new ButtonTeamListener() {
+        @Override
+        public void onClick(Pokemon pokemon) {
+            if(!pokemon.isInTeam){
+                viewModel.addPokemonToTeam(pokemon);
+            }else{
+                viewModel.removeFromTeam(pokemon);
+            }
+        }
+    };
 
     public PokedexFragment() {
         // Required empty public constructor
@@ -74,18 +94,32 @@ public class PokedexFragment extends Fragment {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class);
-        //viewModel.getPokemonList().clear();
+        //viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); TODO Owner activity para que sea el de la actividad
+        viewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
+
+        viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
+
+            viewModel.updateIDsInTeam();
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            int numberOfPokemonTeam = prefs.getInt("cantidad_equipo", 0);
+            if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()){
+                getPokemonAll();
+            }
+        });
+
         viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
             @Override
             public void onChanged(ObservableList<Pokemon> sender) {
+                viewModel.updateIDsInTeam();
             }
             @Override
             public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
             }
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                //updateFavSet();
+
+                //Se toman los favoritos y se indica si el pokemon insertado lo es
                 if(viewModel.getFavPokemonIDs() != null){
                     if(viewModel.getFavPokemonIDs().contains(sender.get(positionStart).getId())){
                         sender.get(positionStart).isFav = true;
@@ -94,11 +128,24 @@ public class PokedexFragment extends Fragment {
                         sender.get(positionStart).isFav = false;
                     }
                 }
+
+                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
+                if(viewModel.getPokemonIDsInTeam() != null){
+                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
+                        sender.get(positionStart).isInTeam = true;
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isInTeam = false;
+                    }
+                }
+
+                //Se actualiza el progreso del dialogo
                 if(progressDialog != null){
                     progressDialog.setProgress(sender.size());
                 }
+
+                //Si se han descargado todos los pokemon, se popula el recyclerView
                 if(sender.size() == pokemonCount){
-                    Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
                     populatePokemonAdapter();
                 }
             }
@@ -113,7 +160,7 @@ public class PokedexFragment extends Fragment {
         viewModel.getFavsList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
             @Override
             public void onChanged(ObservableList<Pokemon> sender) {
-
+                viewModel.updateIDsInTeam();
             }
 
             @Override
@@ -128,7 +175,6 @@ public class PokedexFragment extends Fragment {
                 }
 
                 if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
-                    Collections.sort(viewModel.getFavsList(), (p1, p2) -> p1.getId() - p2.getId());
                     if (tabLayout.getSelectedTabPosition() == 1) {
                         populatePokemonAdapter();
                     }
@@ -142,7 +188,6 @@ public class PokedexFragment extends Fragment {
             }
             @Override
             public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                //updateFavSet(); //TODO LO MISMO
                 if (tabLayout.getSelectedTabPosition() == 1) {
                     populatePokemonAdapter();
                 }
@@ -187,9 +232,7 @@ public class PokedexFragment extends Fragment {
         }catch (Exception e){ }
         pokemonCount=number;
 
-
-        //updateFavSet(); se obtiene al creal el viewModel
-        getPokemonAll();
+        //getPokemonAll(); //Called in viewModel.getPokemonTeam().observe()
 
         return theView;
     }
@@ -262,11 +305,12 @@ public class PokedexFragment extends Fragment {
                     break;
             }
 
+            //Se ordena la lista por IDs
+            Collections.sort(pokemonList, (p1, p2) -> p1.getId() - p2.getId());
+
             act.runOnUiThread(() -> {
-                Log.d(TAG, "Tamaño set de favoritos: " + viewModel.getFavPokemonIDs().size());
-                Log.d(TAG, "Tamaño de la lista de favoritos: " + viewModel.getFavsList().size());
                 if (progressDialog != null) progressDialog.dismiss();
-                pokemonAdapter = new PokedexRecyclerAdapter(getContext(), viewModel, pokemonList);
+                pokemonAdapter = new PokedexRecyclerAdapter(getContext(), pokemonList, favListener, teamListener);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             });

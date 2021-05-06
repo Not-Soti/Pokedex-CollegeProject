@@ -6,12 +6,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class PokedexViewModel extends AndroidViewModel {
 
@@ -20,6 +23,9 @@ public class PokedexViewModel extends AndroidViewModel {
     private final ObservableArrayList<Pokemon> pokemonList;
     private final ObservableArrayList<Pokemon> favsList;
 
+    private LiveData<List<PokemonTeamEntity>> pokemonTeam;
+
+    private HashSet<Integer> pokemonIDsInTeam;
     private HashSet<Integer> favPokemonIDs;
 
     private final Repository repository;
@@ -32,9 +38,21 @@ public class PokedexViewModel extends AndroidViewModel {
         pokemonList = new ObservableArrayList<>();
         favsList = new ObservableArrayList<>();
         favPokemonIDs = repository.getFavouritePokemon();
+        pokemonTeam = repository.getPokemonTeam();
 
     }
 
+    /**
+     * Metodo que devuelve los IDs de los pokemon que forman el equipo
+     * @return Set con los IDs de los pokemon pertenecientes al equipo
+     */
+    public void updateIDsInTeam(){
+        HashSet<Integer> idsInTeam = new HashSet<>();
+        for(PokemonTeamEntity p : pokemonTeam.getValue()){
+            idsInTeam.add(p.getId());
+        }
+        pokemonIDsInTeam = idsInTeam;
+    }
 
     private void updateFavSet(){
         favPokemonIDs = repository.getFavouritePokemon();
@@ -48,11 +66,6 @@ public class PokedexViewModel extends AndroidViewModel {
         repository.getPokemonFavsFromRest(favPokemonIDs, favsList);
     }
 
-/*    public void addPokemonToAll(Pokemon pokemon){
-        synchronized (pokemonList){
-            pokemonList.add(pokemon);
-        }
-    }*/
 
     public void addPokemonToFavs(Pokemon pokemon){
         pokemon.isFav=true;
@@ -99,23 +112,32 @@ public class PokedexViewModel extends AndroidViewModel {
     public ObservableArrayList<Pokemon> getPokemonList() {
         return pokemonList;
     }
-
     public ObservableArrayList<Pokemon> getFavsList() {
         return favsList;
     }
-
     public HashSet<Integer> getFavPokemonIDs() {
         return favPokemonIDs;
     }
+    public HashSet<Integer> getPokemonIDsInTeam() {
+        return pokemonIDsInTeam;
+    }
+    public LiveData<List<PokemonTeamEntity>> getPokemonTeam() {
+        return pokemonTeam;
+    }
 
     public void addPokemonToTeam(Pokemon pokemon) {
+        pokemon.isInTeam=true;
+
         PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
         pokemonDAO.setId(pokemon.getId());
         pokemonDAO.setNombre(pokemon.getName());
         repository.insertPokemonIntoTeam(pokemonDAO);
     }
 
+
+
     public void removeFromTeam(Pokemon pokemon) {
+        pokemon.isInTeam=false;
         PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
         pokemonDAO.setId(pokemon.getId());
         repository.removePokemonFromTeam(pokemonDAO);

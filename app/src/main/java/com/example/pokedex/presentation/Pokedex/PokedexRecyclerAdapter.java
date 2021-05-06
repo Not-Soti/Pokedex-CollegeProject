@@ -2,6 +2,7 @@ package com.example.pokedex.presentation.Pokedex;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,21 +29,15 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
 
     private Context context;
     private String TAG = "RecycleViewAdapter";
-    private PokedexViewModel viewModel;
     private ObservableArrayList<Pokemon> sourceList;
+    private ButtonFavListener favListener;
+    private ButtonTeamListener teamListener;
 
-    public PokedexRecyclerAdapter(Context c, PokedexViewModel vm, ObservableArrayList<Pokemon> source){
+    public PokedexRecyclerAdapter(Context c, ObservableArrayList<Pokemon> source, ButtonFavListener favListener, ButtonTeamListener teamListener){
         context = c;
-        viewModel = vm;
         sourceList = source;
-
-/*        if(!isFavThing){
-            //treating non-favourite pokemon
-            sourceList = vm.getPokemonList();
-        }else{
-            //trating favourte pokemon
-            sourceList = vm.getFavsList();
-        }*/
+        this.favListener = favListener;
+        this.teamListener = teamListener;
     }
 
     @NonNull
@@ -55,6 +50,7 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
     @Override
     public void onBindViewHolder(@NonNull PokedexRecyclerAdapter.ViewHolder holder, int position) {
         Pokemon pokemon = sourceList.get(position);
+        holder.pokemon = pokemon;
 
         //Nombre
         String name = pokemon.getName();
@@ -80,20 +76,11 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
             holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
         }
 
-        holder.favButton.setOnClickListener(v -> {
-            if(!pokemon.isFav) {
-                viewModel.addPokemonToFavs(pokemon);
-                holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
-            }
-            else {
-                viewModel.removePokemonFromFavs(pokemon);
-                holder.favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
-            }
-        });
-
-        holder.addToTeamButton.setOnClickListener(v -> {
-            viewModel.addPokemonToTeam(pokemon);
-        });
+        if(pokemon.isInTeam){
+            holder.addToTeamButton.setText("Remove");
+        }else{
+            holder.addToTeamButton.setText("Add");
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -108,12 +95,14 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         return sourceList.size();
     }
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public TextView nameTv, pokedexNumTv, type1Tv, type2Tv;
         public ImageView imageView;
         public ImageButton favButton;
         public Button addToTeamButton;
+
+        protected Pokemon pokemon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,8 +113,43 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
             type2Tv = itemView.findViewById(R.id.pokeCard_type2);
             favButton = itemView.findViewById(R.id.pokeCard_fav_button);
             addToTeamButton = itemView.findViewById(R.id.pokeCard_addToTeam_button);
+
+            favButton.setOnClickListener(this);
+            addToTeamButton.setOnClickListener(this);
+
         }
 
+        @Override
+        public void onClick(View v) {
+            Log.d(TAG, "Pulsado button");
+            if (v.equals(favButton)){
+                //Si se pulsa el boton de añadir a favoritos
+                Log.d(TAG, "FAV button");
 
+                //Se cambia por la imagen correspondiente
+                if(!pokemon.isFav){
+                    favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_on, null));
+                }else{
+                    favButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_fav_off, null));
+                }
+
+                //Finalmente se trata el click
+                favListener.onClick(pokemon, pokemon.isFav);
+
+            }else if(v.equals(addToTeamButton)){
+                //Si se pulsa el boton de añadir al equipo
+                Log.d(TAG, "TEAM button");
+
+                //Se cambia la imagen correspondiente
+                if(pokemon.isInTeam){
+                    addToTeamButton.setText("Remove");
+                }else{
+                    addToTeamButton.setText("Add");
+                }
+
+                //Finalmente se trata el click
+                teamListener.onClick(pokemon);
+            }
+        }
     }
 }

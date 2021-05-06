@@ -16,6 +16,7 @@ public class Pokemon {
     public Drawable listSprite; //Usado para guardar su imagen al descargarla
     public String type1Str, type2Str;
     public boolean isFav = false; //Indica si el pokemon esta marcado como favorito
+    public boolean isInTeam = false; //Indica si el pokemon forma parte del equipo
 
     @Override
     public boolean equals(@Nullable Object obj) {

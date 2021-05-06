@@ -31,17 +31,16 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
     private ObservableArrayList<Pokemon> sourceList;
     private final LayoutInflater layoutInflater;
-    private TeamViewModel viewModel;
     private Context context;
     private SpinnerSelectedListener spinnerSelectedListener;
+    private DeleteButtonListener deleteButtonListener;
 
-    public TeamRecyclerAdapter(Context c, ObservableArrayList<Pokemon> source, TeamViewModel vm, SpinnerSelectedListener spinnerListener){
+    public TeamRecyclerAdapter(Context c, ObservableArrayList<Pokemon> source, SpinnerSelectedListener spinnerListener, DeleteButtonListener deleteListener){
         context = c;
         layoutInflater = LayoutInflater.from(context);
         sourceList=source;
-        viewModel = vm;
         spinnerSelectedListener = spinnerListener;
-
+        deleteButtonListener = deleteListener;
     }
 
 
@@ -89,9 +88,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         }
 
         //Remove button listener
-        holder.removeButton.setOnClickListener(v -> {
-            viewModel.removeFromTeam(pokemon);
-        });
+        holder.removeButton.setOnClickListener(holder);
     }
 
     @Override
@@ -105,7 +102,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         notifyDataSetChanged();
     }*/
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements AdapterView.OnItemSelectedListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements AdapterView.OnItemSelectedListener, View.OnClickListener{
 
         public TextView nameTv;
         public ImageView imageView;
@@ -123,7 +120,9 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
             mov3Spi = itemView.findViewById(R.id.card_team_mov3Spinner);
             mov4Spi = itemView.findViewById(R.id.card_team_mov4Spinner);
             removeButton = itemView.findViewById(R.id.card_team_removeFromTeam_button);
+
             movSpinners = new Spinner[]{mov1Spi, mov2Spi, mov3Spi, mov4Spi};
+
 
         }
 
@@ -144,6 +143,14 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
             spinnerSelectedListener.onNothingSelected();
+        }
+
+        @Override
+        public void onClick(View v) {
+            //Si es el boton de eliminar el pokemon
+            if (v instanceof Button){
+                deleteButtonListener.onClick(pokemon);
+            }
         }
     }
 }
