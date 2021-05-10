@@ -69,7 +69,7 @@
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Descripcion"
+                android:text="@string/poke_detail_flavorTextUnknown"
                 android:textColor="@color/black"
                 android:textSize="@dimen/poke_detail_flavorEntry_textSize"
                 app:layout_constraintEnd_toEndOf="parent"

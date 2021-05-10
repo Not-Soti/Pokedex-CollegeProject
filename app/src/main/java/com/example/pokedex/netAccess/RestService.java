@@ -33,6 +33,6 @@ public interface RestService {
     /**
      * Metodo que obtiene el JSON con la descripcion textual de cada pokemon
      */
-    @GET("pokemon-species/{id}")
-    Call<PokemonSpeciesDetail> getPokemonSpeciesDetail(@Path("id") int pokedexNumber);
+    @GET("pokemon-species/{specie}")
+    Call<PokemonSpeciesDetail> getPokemonSpeciesDetail(@Path("specie") int specieNumber);
 }

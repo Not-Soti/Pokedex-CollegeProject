@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         //pokedexViewModel = new ViewModelProvider(this).get(PokedexViewModel.class); //TODO ponerlo aqui para que no recarue cada vez que se tiene que entrar
 
         String online = isOnline() ? "SI" : "NO";
-        Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
         Log.d(TAG,"Online: ".concat(online) );
 
         //getSupportActionBar().hide();

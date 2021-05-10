@@ -32,6 +32,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
 
@@ -233,29 +234,48 @@ public class PokemonDetailFragment extends Fragment {
                 .build();
         restService = retrofit.create(RestService.class);
 
-        restService.getPokemonSpeciesDetail(pokemon.getId()).enqueue(new Callback<PokemonSpeciesDetail>() {
+        //Obtener el id de la especie del pokemon para buscar su descripcion
+        //Este id se optiene de la URL del objeto species, en el ultimo campo
+        //Ejemplo de dicha url: https://pokeapi.co/api/v2/pokemon-species/1/
+
+        int specie = 0;
+        String[] urlParts = pokemon.getSpecies().getUrl().split("/");
+        try {
+            specie = Integer.parseInt(urlParts[urlParts.length - 1]);
+        }catch (NumberFormatException e){
+            specie = 0;
+        }
+
+        Log.d("AAAAAAAA", "Specie: "+urlParts[urlParts.length - 1]);
+
+        restService.getPokemonSpeciesDetail(specie).enqueue(new Callback<PokemonSpeciesDetail>() {
             @Override
             public void onResponse(Call<PokemonSpeciesDetail> call, Response<PokemonSpeciesDetail> response) {
                 PokemonSpeciesDetail detail = response.body();
-                List<FlavorTextEntry> entries = detail.getFlavorTextEntries();
+                String flavor = getContext().getString(R.string.poke_detail_flavorTextUnknown);
 
-                boolean hasEntrie = false;
-                int pos = 0;
-                String flavor = "Nada";
-                while ((!hasEntrie) && (pos<entries.size())){
-                    Language lang = entries.get(pos).getLanguage();
-                    if (lang.getName().equals("es")){ //TODO INTERNACIONALIZACION
-                        flavor = entries.get(pos).getFlavorText();
-                        hasEntrie=true;
+                //Si se ha obtenido una respuesta válida se busca la entrada en español
+                if(detail!=null) {
+                    List<FlavorTextEntry> entries = detail.getFlavorTextEntries();
+                    boolean hasEntrie = false;
+                    int pos = 0;
+                    //Se recorren todas las entradas hasta encontrar la que esta en español
+                    while ((!hasEntrie) && (pos < entries.size())) {
+                        Language lang = entries.get(pos).getLanguage();
+                        if (lang.getName().equals("es")) { //TODO INTERNACIONALIZACION
+                            flavor = entries.get(pos).getFlavorText();
+                            hasEntrie = true;
+                        }
+                        pos++;
                     }
-                    pos++;
                 }
-                flavorTextTv.setText(flavor);
+                flavorTextTv.setText(flavor); //Se pone el texto
             }
 
             @Override
             public void onFailure(Call<PokemonSpeciesDetail> call, Throwable t) {
-
+                String flavor = getContext().getString(R.string.poke_detail_flavorTextUnknown);
+                flavorTextTv.setText(flavor);
             }
         });
     }
