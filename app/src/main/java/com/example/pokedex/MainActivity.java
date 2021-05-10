@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
         Log.d(TAG,"Online: ".concat(online) );
 
+        //getSupportActionBar().hide();
+
     }
 
     private boolean isOnline(){

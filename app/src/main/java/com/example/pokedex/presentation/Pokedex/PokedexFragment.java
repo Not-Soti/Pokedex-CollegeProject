@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
@@ -18,12 +17,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.example.pokedex.R;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +39,7 @@ public class PokedexFragment extends Fragment {
     private ProgressDialog progressDialog;
     private String TAG = "--PokedexFragment--";
     private TabLayout tabLayout;
+    private SearchView searchView;
 
     private int pokemonCount = 10;
 
@@ -94,11 +96,42 @@ public class PokedexFragment extends Fragment {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
+        searchView = theView.findViewById(R.id.pokedexFrag_searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                //Dependiendo de en que pestaña esté, si filtrara sobre una u otra lista
+                ObservableArrayList<Pokemon> listToFilter = new ObservableArrayList();
+                if(tabLayout.getSelectedTabPosition() == 0){
+                    listToFilter.addAll(viewModel.getPokemonList());
+                }else if(tabLayout.getSelectedTabPosition() == 1){
+                    listToFilter.addAll(viewModel.getFavsList());
+                }
+
+                //Filtrar si se escriben al menos 3 caracteres
+                if(newText.length() >= 3) {
+                    Iterator<Pokemon> it = listToFilter.iterator();
+                    while (it.hasNext()) {
+                        if (!it.next().getName().contains(newText)) {
+                            it.remove();
+                        }
+                    }
+                }
+                populatePokemonAdapter(listToFilter);
+                return false;
+            }
+        });
+
         //viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); TODO Owner activity para que sea el de la actividad
         viewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
 
         viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
-
             viewModel.updateIDsInTeam();
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -146,7 +179,8 @@ public class PokedexFragment extends Fragment {
 
                 //Si se han descargado todos los pokemon, se popula el recyclerView
                 if(sender.size() == pokemonCount){
-                    populatePokemonAdapter();
+                    //viewModel.setUsableList(viewModel.getPokemonList());
+                    populatePokemonAdapter(viewModel.getPokemonList());
                 }
             }
             @Override
@@ -176,7 +210,8 @@ public class PokedexFragment extends Fragment {
 
                 if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
                     if (tabLayout.getSelectedTabPosition() == 1) {
-                        populatePokemonAdapter();
+                        //viewModel.setUsableList(viewModel.getFavsList());
+                        populatePokemonAdapter(viewModel.getFavsList());
                     }
                 }
 
@@ -189,7 +224,8 @@ public class PokedexFragment extends Fragment {
             @Override
             public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
                 if (tabLayout.getSelectedTabPosition() == 1) {
-                    populatePokemonAdapter();
+                    //viewModel.setUsableList(viewModel.getFavsList());
+                    populatePokemonAdapter(viewModel.getFavsList());
                 }
             }
         });
@@ -244,16 +280,15 @@ public class PokedexFragment extends Fragment {
             downloadPokemonAll();
         }else{
             //Si estan descargados se muestran en pantalla
-            populatePokemonAdapter();
+            populatePokemonAdapter(viewModel.getPokemonList());
         }
     }
 
     private void getPokemonFavs(){
-        //updateFavSet(); //TODO A VER BRO
         if(viewModel.getFavsList().size() != viewModel.getFavPokemonIDs().size()){
             downloadPokemonFavs();
         }else {
-            populatePokemonAdapter();
+            populatePokemonAdapter(viewModel.getFavsList());
         }
     }
 
@@ -286,13 +321,13 @@ public class PokedexFragment extends Fragment {
     /**
      * Puebla el adaptador con los pokemon necesarios
      */
-    public void populatePokemonAdapter(){
+    public void populatePokemonAdapter(ObservableArrayList<Pokemon> pokemonList){
         Activity act = getActivity();
         if(isAdded() && (act != null)) {
 
             /*Dependiendo de la pestaña seleccionada, se previsualizan todos
               los pokemon o solo los favoritos */
-            ObservableArrayList<Pokemon> pokemonList;
+/*            ObservableArrayList<Pokemon> pokemonList;
             switch (tabLayout.getSelectedTabPosition()){
                 case 0:
                     pokemonList = viewModel.getPokemonList();
@@ -303,7 +338,9 @@ public class PokedexFragment extends Fragment {
                 default:
                     pokemonList = viewModel.getPokemonList();
                     break;
-            }
+            }*/
+
+            //ObservableArrayList<Pokemon> pokemonList = viewModel.getUsableList();
 
             //Se ordena la lista por IDs
             Collections.sort(pokemonList, (p1, p2) -> p1.getId() - p2.getId());

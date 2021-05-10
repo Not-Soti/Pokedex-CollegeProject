@@ -125,6 +125,7 @@ public class PokedexViewModel extends AndroidViewModel {
         return pokemonTeam;
     }
 
+
     public void addPokemonToTeam(Pokemon pokemon) {
         pokemon.isInTeam=true;
 

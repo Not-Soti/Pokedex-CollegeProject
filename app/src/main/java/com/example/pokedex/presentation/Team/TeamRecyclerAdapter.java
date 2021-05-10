@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -61,7 +62,9 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         //Log.d("-------adapter", "Pokenombre: "+poke.getName());
 
         //Nombre
-        holder.nameTv.setText(pokemon.getName());
+        String pokemonName = pokemon.getName();
+        String capitalizedName = pokemonName.substring(0,1).toUpperCase() + pokemonName.substring(1); //Poner la primera letra en mayuscula
+        holder.nameTv.setText(capitalizedName);
 
         //Imagen
         holder.imageView.setBackground(pokemon.listSprite);
@@ -69,21 +72,38 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         //Movimientos
         ArrayList<String> moves = new ArrayList<>();
         for(Move move : pokemon.getMoves()){
-            String name = move.getMove().getName();
-            moves.add(name);
+            String moveName = move.getMove().getName();
+            moves.add(moveName);
         }
 
+        //Se crea un String[] con los movimientos para crear el SpinnerAdapter
         String[] movesArr = new String[moves.size()];
         for(int i=0; i<moves.size(); i++){
-            movesArr[i] = moves.get(i);
+            movesArr[i] = moves.get(i); //Se copian los movimientos al array
         }
-        Arrays.sort(movesArr);
+
+        Arrays.sort(movesArr); //Se ordena alfabeticamente
         ArrayAdapter<String> moveAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, movesArr);
         moveAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        /*
+        Se toma cada movimiento que estaba guardado en la bbdd, y se busca en el array que tiene
+        todos los movimientos disponibles, para obtener su posición y así seleccionarlo al
+        cargar la lista. Dicha posicion se guarda en el array savedMovesPos.
+         */
+        int[] savedMovesPos = new int[4];
+        for(int i=0; i<=3; i++){ //Para cada movimiento
+            for(int j=0; j<movesArr.length; j++){ //Se recorre la lista con todos los movimientos
+                if(movesArr[j].equals(pokemon.savedMoves.get(i))){ //si el movimiento coincide
+                    savedMovesPos[i] = j; //se guarda la posicion que tiene en la lista completa
+                }
+            }
+        }
+
+        //Cada spinner se inserta con el adaptador y el movimiento que le corresponde
         for(int i = 0; i<holder.movSpinners.length; i++){
             holder.movSpinners[i].setAdapter(moveAdapter);
-            holder.movSpinners[i].setSelection(1,false);
+            holder.movSpinners[i].setSelection(savedMovesPos[i],false); //false porque si no se ejecuda onItemSelectedListener()
             holder.movSpinners[i].setOnItemSelectedListener(holder);
         }
 
@@ -107,7 +127,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         public TextView nameTv;
         public ImageView imageView;
         public Spinner mov1Spi, mov2Spi, mov3Spi, mov4Spi;
-        public Button removeButton;
+        public ImageButton removeButton;
         public Spinner[] movSpinners;
         public Pokemon pokemon;
 
@@ -137,7 +157,6 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
             String[] moves = {mov1, mov2, mov3, mov4};
 
             spinnerSelectedListener.onItemSelected(pokemon, nombre, moves);
-
         }
 
         @Override
@@ -148,7 +167,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         @Override
         public void onClick(View v) {
             //Si es el boton de eliminar el pokemon
-            if (v instanceof Button){
+            if (v.equals(removeButton)){
                 deleteButtonListener.onClick(pokemon);
             }
         }

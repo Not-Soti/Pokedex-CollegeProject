@@ -77,9 +77,9 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         }
 
         if(pokemon.isInTeam){
-            holder.addToTeamButton.setText("Remove");
+            holder.addToTeamButton.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_team_on, null));
         }else{
-            holder.addToTeamButton.setText("Add");
+            holder.addToTeamButton.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_team_off, null));
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -100,7 +100,7 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
         public TextView nameTv, pokedexNumTv, type1Tv, type2Tv;
         public ImageView imageView;
         public ImageButton favButton;
-        public Button addToTeamButton;
+        public ImageButton addToTeamButton;
 
         protected Pokemon pokemon;
 
@@ -142,9 +142,9 @@ public class PokedexRecyclerAdapter extends RecyclerView.Adapter<PokedexRecycler
 
                 //Se cambia la imagen correspondiente
                 if(pokemon.isInTeam){
-                    addToTeamButton.setText("Remove");
+                    addToTeamButton.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_team_on, null));
                 }else{
-                    addToTeamButton.setText("Add");
+                    addToTeamButton.setBackground(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_team_off, null));
                 }
 
                 //Finalmente se trata el click

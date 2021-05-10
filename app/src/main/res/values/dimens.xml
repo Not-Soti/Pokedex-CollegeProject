@@ -5,7 +5,10 @@
     <dimen name="poke_detail_flavorEntry_textSize">18sp</dimen>
     <dimen name="poke_detail_base_textSize">16sp</dimen>
 
-    <!--Pokemon card -->
-    <dimen name="poke_card_margin">4dp</dimen>
-    <dimen name="poke_card_name_textSize">24sp</dimen>
+    <!--Pokedex card -->
+    <dimen name="pokedex_card_margin">4dp</dimen>
+    <dimen name="pokedex_card_name_textSize">24sp</dimen>
+
+    <!--Pokemon team card-->
+    <dimen name="team_card_mov_spinner_width">170dp</dimen>
 </resources>

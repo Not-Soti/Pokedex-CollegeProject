@@ -25,6 +25,7 @@ import com.example.pokedex.R;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.presentation.Pokedex.PokedexRecyclerAdapter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -123,8 +124,6 @@ public class TeamFragment extends Fragment{
 
                 //Si se han descargado todos los pokemon, se muestran
                 if(sender.size() == numberOfPokemon){
-                    //isDownloading = false;
-                    Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
                     populatePokemonAdapter();
                 }
             }
@@ -163,6 +162,23 @@ public class TeamFragment extends Fragment{
     public void populatePokemonAdapter(){
         Activity act = getActivity();
         if(isAdded() && (act != null)) {
+
+            //Se ordena la lista de pokemon a mostrar por ID
+            Collections.sort(viewModel.getPokemonList(), (p1, p2) -> p1.getId() - p2.getId());
+
+            //Se recorren, para correlacionar los movimientos guardados en la base de datos con los que se van a mostrar
+            for(Pokemon pokemon : viewModel.getPokemonList()){
+                for(PokemonTeamEntity pokemonDB : viewModel.getPokemonTeam().getValue()){
+                    //Se busca el pokemon en las 2 listas y se copian los datos de uno a otro
+                    if (pokemon.getId() == pokemonDB.getId()){
+                        pokemon.savedMoves = new ArrayList<>();
+                        pokemon.savedMoves.add(pokemonDB.getMov1());
+                        pokemon.savedMoves.add(pokemonDB.getMov2());
+                        pokemon.savedMoves.add(pokemonDB.getMov3());
+                        pokemon.savedMoves.add(pokemonDB.getMov4());
+                    }
+                }
+            }
 
             act.runOnUiThread(() -> {
                 if (progressDialog != null) progressDialog.dismiss();

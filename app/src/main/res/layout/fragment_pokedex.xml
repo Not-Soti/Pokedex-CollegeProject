@@ -11,6 +11,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <SearchView
+            android:id="@+id/pokedexFrag_searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Filtrar"
+            android:iconifiedByDefault="true">
+        </SearchView>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/pokedexFrag_TabLayout"
             android:layout_width="match_parent"
@@ -34,11 +48,12 @@
             android:id="@+id/pokedexFrag_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/pokedex_list_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/pokedex_list_background"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
+
 </FrameLayout>

@@ -6,9 +6,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@drawable/pokemon_card_border"
-    android:layout_marginBottom="@dimen/poke_card_margin"
-    android:layout_marginLeft="@dimen/poke_card_margin"
-    android:layout_marginRight="@dimen/poke_card_margin">
+    android:layout_marginBottom="@dimen/pokedex_card_margin"
+    android:layout_marginLeft="@dimen/pokedex_card_margin"
+    android:layout_marginRight="@dimen/pokedex_card_margin">
 
     <ImageView
         android:id="@+id/pokeCard_sprite"
@@ -44,7 +44,7 @@
         android:layout_marginLeft="16dp"
         android:text="TextView"
         android:textColor="@color/black"
-        android:textSize="@dimen/poke_card_name_textSize"
+        android:textSize="@dimen/pokedex_card_name_textSize"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/pokeCard_sprite"
         app:layout_constraintTop_toTopOf="@+id/pokeCard_sprite" />
@@ -102,12 +102,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_fav_off" />
 
-    <Button
+    <ImageButton
         android:id="@+id/pokeCard_addToTeam_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="add to team"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/ic_team_off"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toStartOf="@+id/pokeCard_fav_button"
+        app:layout_constraintTop_toTopOf="@+id/pokeCard_fav_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
@@ -17,6 +19,7 @@ public class Pokemon {
     public String type1Str, type2Str;
     public boolean isFav = false; //Indica si el pokemon esta marcado como favorito
     public boolean isInTeam = false; //Indica si el pokemon forma parte del equipo
+    public List<String> savedMoves = null; //Lista de movimientos, se inicializa cuando se cargan de la BBDD
 
     @Override
     public boolean equals(@Nullable Object obj) {
