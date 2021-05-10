@@ -166,9 +166,6 @@ public class PokedexFragment extends Fragment {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             int numberOfPokemonTeam = prefs.getInt("cantidad_equipo", 0);
-            if(numberOfPokemonTeam > MAX_POKEMON_NUMBER){
-                numberOfPokemonTeam = MAX_POKEMON_NUMBER;
-            }
             if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()){
                 getPokemonAll();
             }
@@ -303,12 +300,15 @@ public class PokedexFragment extends Fragment {
         });
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String numberOfPokemonStr = sharedPreferences.getString("pokemon_count", "10");
-        int number = 10;
+        String numberOfPokemonStr = sharedPreferences.getString("pokemon_count", "100");
+        int number = 100;
         try{
             number = Integer.parseInt(numberOfPokemonStr);
         }catch (Exception e){ }
         pokemonCount=number;
+        if(pokemonCount > MAX_POKEMON_NUMBER){
+            pokemonCount = MAX_POKEMON_NUMBER; //Limitar el numero al maximo de pokemon que hay en la API
+        }
 
         //getPokemonAll(); //Called in viewModel.getPokemonTeam().observe()
 
