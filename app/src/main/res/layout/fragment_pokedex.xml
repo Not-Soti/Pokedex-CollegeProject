@@ -11,13 +11,30 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <SearchView
-            android:id="@+id/pokedexFrag_searchView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Filtrar"
-            android:iconifiedByDefault="true">
-        </SearchView>
+            android:orientation="horizontal">
+
+            <SearchView
+                android:id="@+id/pokedexFrag_searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:iconifiedByDefault="true"
+                android:queryHint="Filtrar">
+
+            </SearchView>
+
+            <ImageButton
+                android:id="@+id/pokedexFrag_sortButton"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:background="@drawable/ic_sort_maxmin" />
+
+        </LinearLayout>
 
         <View
             android:id="@+id/divider3"
