@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
@@ -21,7 +20,6 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 
 import com.example.pokedex.R;
-import com.example.pokedex.model.pokeApiModel.Pokedex;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.google.android.material.tabs.TabLayout;
 
@@ -113,9 +111,9 @@ public class PokedexFragment extends Fragment {
             public void onClick(View v) {
                 //Se pone la imagen correspondiente
                 if(!isSortDesc){
-                    sortButton.setBackground(ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.ic_sort_maxmin, null));
+                    sortButton.setImageResource(R.drawable.ic_sort_maxmin);
                 }else{
-                    sortButton.setBackground(ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.ic_sort_minmax, null));
+                    sortButton.setImageResource(R.drawable.ic_sort_minmax);
                 }
                 isSortDesc = !isSortDesc; //Se cambia el criterio de ordenacion
 
@@ -127,33 +125,12 @@ public class PokedexFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                filterPokemonList(query);
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Se crea una lista para filtrar
-                ObservableArrayList<Pokemon> listToFilter = new ObservableArrayList();
-
-                //Dependiendo de la pestaña en la que se esté, se parte de la lista normal o la de favoritos
-                if(tabLayout.getSelectedTabPosition() == 0){
-                    listToFilter.addAll(viewModel.getPokemonList());
-                }else if(tabLayout.getSelectedTabPosition() == 1){
-                    listToFilter.addAll(viewModel.getFavsList());
-                }
-
-                //Filtrar si se escriben al menos 3 caracteres
-                if(newText.length() >= 3) {
-                    Iterator<Pokemon> it = listToFilter.iterator();
-                    while (it.hasNext()) {
-                        if (!it.next().getName().contains(newText)) {
-                            it.remove();
-                        }
-                    }
-                }
-                //populatePokemonAdapter(listToFilter); //Se pintan los pokemon de la lista
-                listToUse = new ObservableArrayList<>();
-                listToUse.addAll(listToFilter);
-                populatePokemonAdapter();
+                filterPokemonList(newText);
                 return false;
             }
         });
@@ -411,6 +388,48 @@ public class PokedexFragment extends Fragment {
             Collections.sort(listToUse, (p1, p2) -> p2.getId() - p1.getId());
         }
 
+    }
+
+    private void filterPokemonList(String newText){
+        //Se crea una lista para filtrar
+        ObservableArrayList<Pokemon> listToFilter = new ObservableArrayList<>();
+
+        //Dependiendo de la pestaña en la que se esté, se parte de la lista normal o la de favoritos
+        if(tabLayout.getSelectedTabPosition() == 0){
+            listToFilter.addAll(viewModel.getPokemonList());
+        }else if(tabLayout.getSelectedTabPosition() == 1){
+            listToFilter.addAll(viewModel.getFavsList());
+        }
+
+        //Si se escriben números se filtra por id
+        try{
+            int idTofilter = Integer.parseInt(newText);
+
+            //Filtrar si se escriben al menos 3 caracteres
+            Iterator<Pokemon> it = listToFilter.iterator();
+            while (it.hasNext()) {
+                //Se obtiene el id y se pasa a String para comparar
+                if (!String.valueOf(it.next().getId()).contains(newText)) {
+                    it.remove();
+                }
+            }
+        }catch (NumberFormatException ex){
+
+            //Si se han escrito letras, se filtra por nombre
+            //Filtrar si se escriben al menos 3 caracteres
+            if(newText.length() >= 3) {
+                Iterator<Pokemon> it = listToFilter.iterator();
+                while (it.hasNext()) {
+                    if (!it.next().getName().contains(newText)) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+        //Se reinicia la lista de pokemon a usar y se añaden los filtrados
+        listToUse = new ObservableArrayList<>();
+        listToUse.addAll(listToFilter);
+        populatePokemonAdapter();
     }
 
 }

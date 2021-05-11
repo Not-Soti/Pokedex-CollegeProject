@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/hostFragment"
-        android:name="com.example.pokedex.presentation.HostFragment"
+        android:name="com.example.pokedex.HostFragment"
         android:label="fragment_host"
         tools:layout="@layout/fragment_host" >
         <action

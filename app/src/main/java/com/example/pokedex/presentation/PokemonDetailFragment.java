@@ -63,6 +63,9 @@ public class PokemonDetailFragment extends Fragment {
     private TextView healthTv, attackTv, speAttackTv, defenseTv, speDefenseTv, speedTv;
     private ProgressBar healthBar, attackBar, speAttackBar, defenseBar, speDefenseBar, speedBar;
 
+    private String systemLanguaje; //Campo que indica el lenguaje del sistema, usado para obtener
+                                   //la descripción en el idioma correspondiente
+
     public PokemonDetailFragment() {
         // Required empty public constructor
     }
@@ -74,7 +77,6 @@ public class PokemonDetailFragment extends Fragment {
      * @param pokemonID PokemonID number to represent in the fragment
      * @return A new instance of fragment PokemonDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static PokemonDetailFragment newInstance(int pokemonID) {
         PokemonDetailFragment fragment = new PokemonDetailFragment();
         Bundle args = new Bundle();
@@ -122,12 +124,21 @@ public class PokemonDetailFragment extends Fragment {
         speDefenseBar = theView.findViewById(R.id.poke_detail_speDeffenseBar);
         speedBar = theView.findViewById(R.id.poke_detail_speedBar);
 
+        //Se pone el maximo en cada barra de estadisticas
         healthBar.setMax(255);
         attackBar.setMax(255);
         defenseBar.setMax(255);
         speAttackBar.setMax(255);
         speDefenseBar.setMax(255);
         speedBar.setMax(255);
+
+        //Se obtiene el lenguaje del sistema. Si no es español, se usa ingles por defecto
+        Locale locale = Locale.getDefault();
+        if (locale.getLanguage().equals(new Locale("es").getLanguage())){
+            systemLanguaje = "es";
+        }else{
+            systemLanguaje = "en";
+        }
 
         getPokemonInfo();
 
@@ -261,8 +272,10 @@ public class PokemonDetailFragment extends Fragment {
                     int pos = 0;
                     //Se recorren todas las entradas hasta encontrar la que esta en español
                     while ((!hasEntrie) && (pos < entries.size())) {
+                        //Se obtiene el lenguaje de la entrada
                         Language lang = entries.get(pos).getLanguage();
-                        if (lang.getName().equals("es")) { //TODO INTERNACIONALIZACION
+
+                        if (lang.getName().equals(systemLanguaje)) {
                             flavor = entries.get(pos).getFlavorText();
                             hasEntrie = true;
                         }

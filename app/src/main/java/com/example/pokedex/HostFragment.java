@@ -1,4 +1,4 @@
-package com.example.pokedex.presentation;
+package com.example.pokedex;
 
 import android.os.Bundle;
 
@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.example.pokedex.R;
 
 /**
  * A simple {@link Fragment} subclass.
