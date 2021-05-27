@@ -156,6 +156,7 @@ public class PokedexFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 viewModel.clearPokemonList(); //Se reinicia la lista de pokemon que habia
+                //tabLayout.selectTab(tabLayout.getTabAt(0)); //Se selecciona la pestaña de la lista principal //TODO La pestaña se queda en la de favs, pero si se cambia asi se descargan todos
 
                 if(query.isEmpty()){ //Si la busqueda esta vacia se descargan todos los pokemon
                     getPokemonAll();
@@ -298,9 +299,22 @@ public class PokedexFragment extends Fragment {
 
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                Log.d(TAG, "A descargar " + viewModel.getFavPokemonIDs().size() + ", descargados " + viewModel.getFavsList().size());
+                //Log.d(TAG, "A descargar " + viewModel.getFavPokemonIDs().size() + ", descargados " + viewModel.getFavsList().size());
                 if(progressDialog != null){
                     progressDialog.setProgress(sender.size());
+                }
+
+                //Se marca el pokemon como favorito
+                sender.get(positionStart).isFav = true;
+
+                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
+                if(viewModel.getPokemonIDsInTeam() != null){
+                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
+                        sender.get(positionStart).isInTeam = true;
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isInTeam = false;
+                    }
                 }
 
                 if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
