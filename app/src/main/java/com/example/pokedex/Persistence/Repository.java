@@ -44,17 +44,41 @@ public class Repository {
         pokemonTeam = pokemonDAO.getFullTeam();
     }
 
-    public void getPokemonListFromRest(int pokemonCount, List<Pokemon> pokemonList){
+    /**
+     * Metodo que descarga los n primeros pokemon, donde n es el parametro que se
+     * pasa como argumento
+     * @param pokemonCount: Cantidad de pokemon a descargar
+     * @param pokemonList: Lista a la que se añadiran los pokemon
+     */
+    public void downloadPokemonAll(int pokemonCount, List<Pokemon> pokemonList){
         WebService webService = new WebService(context);
         webService.getPokemonFromJSON(pokemonCount, pokemonList);
     }
 
-    public void getPokemonFavsFromRest(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
+    /**
+     * Metodo que descarga los pokemon favoritos
+     * @param pokemonIDs: ID de los pokemon favoritos
+     * @param pokemonList: Lista a la que se añadiran los pokemon
+     */
+    public void downloadPokemonFavourites(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
         WebService webService = new WebService(context);
         webService.getFavsFromJSON(pokemonIDs, pokemonList);
     }
 
-    public void downloadPokemonFromId(int id, List<Pokemon> pokemonList){
+    /**
+     * Metodo que descarga los pokemon que coincidad con el tipo elegido, y su ID es menor que
+     * el que se pasa como argumento
+     * @param pokemonCount: Maximo ID a descargar
+     * @param pokemonList: Lista a la que se añadiran los pokemon
+     * @param type: Tipo del pokemon que buscar
+     */
+    public void downloadPokemonByType(int pokemonCount, List<Pokemon> pokemonList, String type){
+
+        WebService webService = new WebService(context);
+        webService.downloadPokemonByType(pokemonCount, pokemonList, type);
+    }
+
+    public void downloadPokemonById(int id, List<Pokemon> pokemonList){
         WebService webService = new WebService(context);
         webService.getPokemonByID(id, pokemonList);
     }
@@ -75,7 +99,6 @@ public class Repository {
 
         if(!file.exists()){
             try {
-                Log.d(TAG, "Creado fichero");
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -86,7 +109,6 @@ public class Repository {
                 /*Si nunca se ha escrito en el fichero, hay que hacerlo porque
                   si no produce EOFException al leerlo
                 */
-                Log.d(TAG, "Creando fichero");
                 fos = new FileOutputStream(file);
                 oos = new ObjectOutputStream(fos);
                 oos.writeObject(favs);
@@ -128,7 +150,6 @@ public class Repository {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "Pokemon guardado. Hay "+favs.size());
     }
 
     public synchronized void removeFavPokemon(Pokemon p){
@@ -152,7 +173,6 @@ public class Repository {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "Pokemon elimiado. Hay "+favs.size());
     }
 
     public LiveData<List<PokemonTeamEntity>> getPokemonTeam(){

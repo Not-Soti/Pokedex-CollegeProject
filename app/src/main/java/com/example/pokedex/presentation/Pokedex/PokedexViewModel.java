@@ -12,7 +12,6 @@ import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.Persistence.Repository;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -59,11 +58,15 @@ public class PokedexViewModel extends AndroidViewModel {
     }
 
     public void updatePokemonList(int count){
-        repository.getPokemonListFromRest(count, pokemonList);
+        repository.downloadPokemonAll(count, pokemonList);
+    }
+
+    public void updatePokemonListByType(int count, String type){
+        repository.downloadPokemonByType(count, pokemonList, type);
     }
 
     public void updateFavList(){
-        repository.getPokemonFavsFromRest(favPokemonIDs, favsList);
+        repository.downloadPokemonFavourites(favPokemonIDs, favsList);
     }
 
 
@@ -135,12 +138,18 @@ public class PokedexViewModel extends AndroidViewModel {
         repository.insertPokemonIntoTeam(pokemonDAO);
     }
 
-
-
     public void removeFromTeam(Pokemon pokemon) {
         pokemon.isInTeam=false;
         PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
         pokemonDAO.setId(pokemon.getId());
         repository.removePokemonFromTeam(pokemonDAO);
+    }
+
+    public void clearPokemonList(){
+        pokemonList.clear();
+    }
+
+    public void clearFavsList(){
+        favsList.clear();
     }
 }

@@ -11,6 +11,9 @@ import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.model.pokeApiModel.PokemonIndex;
 import com.example.pokedex.model.pokeApiModel.PokemonIndexItem;
 import com.example.pokedex.model.pokeApiModel.Type;
+import com.example.pokedex.model.pokeApiModel.TypeDetail.TypeDetail;
+import com.example.pokedex.model.pokeApiModel.TypeDetail.TypeDetail_Pokemon;
+import com.example.pokedex.model.pokeApiModel.TypeDetail.TypeDetail_Pokemon__1;
 import com.example.pokedex.netAccess.RestService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -162,5 +165,46 @@ public class WebService {
 
     private synchronized void addPokemonToList(List<Pokemon> pokemonList, Pokemon pokemon){
         pokemonList.add(pokemon);
+    }
+
+    /**
+     * Metodo que descarga los pokemon que coincidad con el tipo elegido, y su ID es menor que
+     * el que se pasa como argumento
+     * @param pokemonCount: Maximo ID a descargar
+     * @param pokemonList: Lista a la que se añadiran los pokemon
+     * @param type: Tipo del pokemon que buscar
+     */
+    public void downloadPokemonByType(int pokemonCount, List<Pokemon> pokemonList, String type) {
+
+        //Se descarga la informacion del tipo que se pasa como parametro
+
+        restService.getPokemonTypeDetail(type).enqueue(new Callback<TypeDetail>() {
+            @Override
+            public void onResponse(Call<TypeDetail> call, Response<TypeDetail> response) {
+                //Se obtiene la informacion generica del tipo pokemon
+                TypeDetail typeDetail = response.body();
+
+                //Se obtiene la lista de pokemon de dicho tipo
+                LinkedList<TypeDetail_Pokemon> lista = new LinkedList<>(typeDetail.getPokemon());
+
+                //Se recorren los pokemon buscando su ID, para luego descargarlos individualmente
+                for(TypeDetail_Pokemon poke : lista){
+                    TypeDetail_Pokemon__1 pokemonAux = poke.getPokemon(); //Transicion necesaria para obtener el ID
+
+                    String[] url_split = pokemonAux.getUrl().split("/"); //El ID es el ultimo elemento de la URL
+                    int id = Integer.parseInt(url_split[url_split.length-1]);
+
+                    if(id <= pokemonCount) {
+                        getPokemonByID(id, pokemonList);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TypeDetail> call, Throwable t) {
+
+            }
+        });
+
     }
 }

@@ -1,15 +1,11 @@
 package com.example.pokedex.presentation.Team;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.arch.core.util.Function;
 import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 
 import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.Persistence.Repository;
@@ -37,7 +33,7 @@ public class TeamViewModel extends AndroidViewModel {
      */
     public void downloadPokemon(){
         for(PokemonTeamEntity poke : Objects.requireNonNull(pokemonTeam.getValue())) {
-            repository.downloadPokemonFromId(poke.getId(), pokemonList);
+            repository.downloadPokemonById(poke.getId(), pokemonList);
         }
     }
 

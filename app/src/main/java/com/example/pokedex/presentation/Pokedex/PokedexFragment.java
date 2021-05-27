@@ -13,10 +13,13 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 
 import com.example.pokedex.R;
@@ -39,12 +42,23 @@ public class PokedexFragment extends Fragment {
     private ProgressDialog progressDialog;
     private String TAG = "--PokedexFragment--";
     private TabLayout tabLayout;
-    private SearchView searchView;
+    private SearchView filterSearchView; //SearchView usada para filtrar por nombre / ID
+    private SearchView searchSearchView; //SearchView usada para buscar por tipo, habilidad, movimiento...
 
     private ObservableArrayList<Pokemon> listToUse; //Referencia de la lista a usar para filtrar, ordenar...
 
     private ImageButton sortButton;
     private boolean isSortDesc = true;
+
+    private ImageButton searchSettingsButton;
+    private int searchType = 1;
+
+    /*Flag que controla si se esta haciendo una busqueda personalizada o no.
+      Cuando no se hace, se descargan los N primeros pokemon, por lo que no se muestran
+      hasta que no se descarguen todos. Al hacer una búsqueda no es posible saber de antemano
+      cuantos se van a descargar, por lo tanto se mostraran a medida que se descarguen.
+     */
+    private boolean isPerformingSearch = false;
 
     private int pokemonCount = 10;
 
@@ -103,17 +117,20 @@ public class PokedexFragment extends Fragment {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_pokedex, container, false);
 
-        searchView = theView.findViewById(R.id.pokedexFrag_searchView);
+        filterSearchView = theView.findViewById(R.id.pokedexFrag_filter_searchView);
         sortButton = theView.findViewById(R.id.pokedexFrag_sortButton);
+
+        searchSearchView = theView.findViewById(R.id.pokedexFrag_search_searchView);
+        searchSettingsButton = theView.findViewById(R.id.pokedexFrag_searchSettingsButton);
 
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Se pone la imagen correspondiente
                 if(!isSortDesc){
-                    sortButton.setImageResource(R.drawable.ic_sort_maxmin);
-                }else{
                     sortButton.setImageResource(R.drawable.ic_sort_minmax);
+                }else{
+                    sortButton.setImageResource(R.drawable.ic_sort_maxmin);
                 }
                 isSortDesc = !isSortDesc; //Se cambia el criterio de ordenacion
 
@@ -122,7 +139,7 @@ public class PokedexFragment extends Fragment {
         });
 
         //Se obtiene la barra de busqueda y se añade el listener de eventos
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        filterSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 filterPokemonList(query);
@@ -135,16 +152,79 @@ public class PokedexFragment extends Fragment {
             }
         });
 
+        searchSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                viewModel.clearPokemonList(); //Se reinicia la lista de pokemon que habia
+
+                if(query.isEmpty()){ //Si la busqueda esta vacia se descargan todos los pokemon
+                    getPokemonAll();
+                }else if(searchType == 1){
+                    Log.d(TAG, "QuerySubmitText");
+                    downloadPokemonByType(query.toLowerCase());
+                }
+                searchSearchView.clearFocus();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        //Listener para el boton de cancelar la escritura en el cuadro de busqueda
+        searchSearchView.setOnCloseListener(() -> {
+            viewModel.clearPokemonList();
+            getPokemonAll(); //se vuelven a descargar todos los pokemon
+            return true;
+        });
+
+        //Abrir el menu de opciones de busqueda al pulsar el boton correspondiente
+        searchSettingsButton.setOnClickListener(v -> {
+            //Se crea el menu
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            popup.getMenuInflater().inflate(R.menu.menu_pokedex_search_settings, popup.getMenu());
+
+            //Se registra que hacer cuando se seleccione alguna opcion
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()){
+                        case R.id.pokedex_search_menu_name:
+                            Log.d(TAG, "Seleccionado buscar por nombre");
+                            return false;
+                        case R.id.pokedex_search_menu_type:
+                            Log.d(TAG, "Seleccionado buscar por tipo");
+                            return false;
+                        case R.id.pokedex_search_menu_hability:
+                            Log.d(TAG, "Seleccionado buscar por habilidad");
+                            return false;
+                        case R.id.pokedex_search_menu_move:
+                            Log.d(TAG, "Seleccionado buscar por movimiento");
+                            return false;
+                        default:
+                            return false;
+                    }
+                }
+            });
+            popup.show(); //Se muestra en el menu
+        });
+
         //viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); TODO Owner activity para que sea el de la actividad
         viewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
 
         viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
             viewModel.updateIDsInTeam();
 
+            /*Se obtiene de la base de datos cuales son los pokemon favoritos.
+              Cuando se decarguen se hayan obtenido todos los de la BBDD, se
+              descargan los pokemon de internet.
+             */
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             int numberOfPokemonTeam = prefs.getInt("cantidad_equipo", 0);
             if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()){
-                getPokemonAll();
+                getPokemonAll(); //Descargar pokemon
             }
         });
 
@@ -184,10 +264,15 @@ public class PokedexFragment extends Fragment {
                     progressDialog.setProgress(sender.size());
                 }
 
-                //Si se han descargado todos los pokemon, se popula el recyclerView
-                if(sender.size() == pokemonCount){
-                    //viewModel.setUsableList(viewModel.getPokemonList());
-                    //populatePokemonAdapter(viewModel.getPokemonList());
+                //En caso de estar descargando pokemon sabiendo el limite maximo,
+                //si se han descargado todos los pokemon, se popula el recyclerView
+                if(!isPerformingSearch) {
+                    if (sender.size() == pokemonCount) {
+                        listToUse = new ObservableArrayList<>();
+                        listToUse.addAll(viewModel.getPokemonList());
+                        populatePokemonAdapter();
+                    }
+                }else{
                     listToUse = new ObservableArrayList<>();
                     listToUse.addAll(viewModel.getPokemonList());
                     populatePokemonAdapter();
@@ -213,7 +298,7 @@ public class PokedexFragment extends Fragment {
 
             @Override
             public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
+                Log.d(TAG, "A descargar " + viewModel.getFavPokemonIDs().size() + ", descargados " + viewModel.getFavsList().size());
                 if(progressDialog != null){
                     progressDialog.setProgress(sender.size());
                 }
@@ -264,15 +349,12 @@ public class PokedexFragment extends Fragment {
                         break;
                 }
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -287,7 +369,7 @@ public class PokedexFragment extends Fragment {
             pokemonCount = MAX_POKEMON_NUMBER; //Limitar el numero al maximo de pokemon que hay en la API
         }
 
-        //getPokemonAll(); //Called in viewModel.getPokemonTeam().observe()
+        //getPokemonAll(); //Se llama en viewModel.getPokemonTeam().observe()
 
         return theView;
     }
@@ -308,6 +390,7 @@ public class PokedexFragment extends Fragment {
 
     private void getPokemonFavs(){
         if(viewModel.getFavsList().size() != viewModel.getFavPokemonIDs().size()){
+            viewModel.clearFavsList();
             downloadPokemonFavs();
         }else {
             //populatePokemonAdapter(viewModel.getFavsList());
@@ -318,6 +401,7 @@ public class PokedexFragment extends Fragment {
     }
 
     private void downloadPokemonAll(){
+        isPerformingSearch = false; //Se descargan todos indiscriminadamente
         //Se crea un dialog indicando que se están descargando cosas, el cual se eliminara
         //cuando acabe la descarga.
         progressDialog = new ProgressDialog(getContext());
@@ -332,6 +416,7 @@ public class PokedexFragment extends Fragment {
     }
 
     private void downloadPokemonFavs(){
+        isPerformingSearch = false; //Se descargan todos indiscriminadamente
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Descargando");
         progressDialog.setMessage("Se está descargando la informacion necesaria");
@@ -343,31 +428,26 @@ public class PokedexFragment extends Fragment {
         viewModel.updateFavList();
     }
 
+    private void downloadPokemonByType(String type){
+        Log.d(TAG, "downloadPokemonByType");
+        isPerformingSearch = true; //Se descargan los que encajen con el parametro indicado
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Se está descargando la informacion necesaria");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        viewModel.updatePokemonListByType(pokemonCount, type);
+    }
+
     /**
      * Puebla el adaptador con los pokemon necesarios
      */
     public void populatePokemonAdapter(){
         Activity act = getActivity();
         if(isAdded() && (act != null)) {
-
-            /*Dependiendo de la pestaña seleccionada, se previsualizan todos
-              los pokemon o solo los favoritos */
-/*            ObservableArrayList<Pokemon> pokemonList;
-            switch (tabLayout.getSelectedTabPosition()){
-                case 0:
-                    pokemonList = viewModel.getPokemonList();
-                    break;
-                case 1:
-                    pokemonList = viewModel.getFavsList();
-                    break;
-                default:
-                    pokemonList = viewModel.getPokemonList();
-                    break;
-            }*/
-
-            //ObservableArrayList<Pokemon> pokemonList = viewModel.getUsableList();
-
-            //Se ordena la lista por IDs
+            //Se ordena la lista por ID
             sortPokemonList();
 
             act.runOnUiThread(() -> {

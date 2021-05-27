@@ -3,6 +3,7 @@ package com.example.pokedex.netAccess;
 import com.example.pokedex.model.pokeApiModel.PokemonIndex;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.model.pokeApiModel.PokemonSpeciesDetail;
+import com.example.pokedex.model.pokeApiModel.TypeDetail.TypeDetail;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -35,4 +36,12 @@ public interface RestService {
      */
     @GET("pokemon-species/{specie}")
     Call<PokemonSpeciesDetail> getPokemonSpeciesDetail(@Path("specie") int specieNumber);
+
+    /**
+     * Metodo que obtiene el JSON con los detalles del tipo pokemon seleccionado
+     * @param type: tipo pokemon del que buscar el detalle (Planta, Fuego, Agua...)
+     * @return
+     */
+    @GET("type/{type_string}")
+    Call<TypeDetail> getPokemonTypeDetail(@Path("type_string") String type);
 }
