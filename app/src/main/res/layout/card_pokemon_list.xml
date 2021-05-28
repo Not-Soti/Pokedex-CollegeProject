@@ -8,7 +8,8 @@
     android:background="@drawable/pokemon_card_border"
     android:layout_marginBottom="@dimen/pokedex_card_margin"
     android:layout_marginLeft="@dimen/pokedex_card_margin"
-    android:layout_marginRight="@dimen/pokedex_card_margin">
+    android:layout_marginRight="@dimen/pokedex_card_margin"
+    android:elevation="3dp">
 
     <ImageView
         android:id="@+id/pokeCard_sprite"

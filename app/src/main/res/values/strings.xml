@@ -30,6 +30,8 @@
     <string name="stat_speDefense">Defensa especial:</string>
     <string name="stat_speed">Velocidad:</string>
     <string name="poke_detail_flavorTextUnknown">No se tienen datos sobre este pokemon</string>
+    <string name="search_diag_search">Buscar</string>
+    <string name="common_cancel">Cancelar</string>
 
 
 </resources>

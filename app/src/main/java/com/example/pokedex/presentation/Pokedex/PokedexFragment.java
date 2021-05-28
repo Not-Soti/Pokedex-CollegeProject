@@ -1,6 +1,8 @@
 package com.example.pokedex.presentation.Pokedex;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,10 +22,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.example.pokedex.R;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.Collections;
@@ -43,15 +48,13 @@ public class PokedexFragment extends Fragment {
     private String TAG = "--PokedexFragment--";
     private TabLayout tabLayout;
     private SearchView filterSearchView; //SearchView usada para filtrar por nombre / ID
-    private SearchView searchSearchView; //SearchView usada para buscar por tipo, habilidad, movimiento...
 
     private ObservableArrayList<Pokemon> listToUse; //Referencia de la lista a usar para filtrar, ordenar...
 
     private ImageButton sortButton;
     private boolean isSortDesc = true;
 
-    private ImageButton searchSettingsButton;
-    private int searchType = 1;
+    private FloatingActionButton searchButton;
 
     /*Flag que controla si se esta haciendo una busqueda personalizada o no.
       Cuando no se hace, se descargan los N primeros pokemon, por lo que no se muestran
@@ -120,22 +123,18 @@ public class PokedexFragment extends Fragment {
         filterSearchView = theView.findViewById(R.id.pokedexFrag_filter_searchView);
         sortButton = theView.findViewById(R.id.pokedexFrag_sortButton);
 
-        searchSearchView = theView.findViewById(R.id.pokedexFrag_search_searchView);
-        searchSettingsButton = theView.findViewById(R.id.pokedexFrag_searchSettingsButton);
+        searchButton = theView.findViewById(R.id.pokedexFrag_searchFAB);
 
-        sortButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Se pone la imagen correspondiente
-                if(!isSortDesc){
-                    sortButton.setImageResource(R.drawable.ic_sort_minmax);
-                }else{
-                    sortButton.setImageResource(R.drawable.ic_sort_maxmin);
-                }
-                isSortDesc = !isSortDesc; //Se cambia el criterio de ordenacion
-
-                populatePokemonAdapter(); //Se pintan los pokemon de la lista
+        sortButton.setOnClickListener(v -> {
+            //Se pone la imagen correspondiente
+            if(!isSortDesc){
+                sortButton.setImageResource(R.drawable.ic_sort_minmax);
+            }else{
+                sortButton.setImageResource(R.drawable.ic_sort_maxmin);
             }
+            isSortDesc = !isSortDesc; //Se cambia el criterio de ordenacion
+
+            populatePokemonAdapter(); //Se pintan los pokemon de la lista
         });
 
         //Se obtiene la barra de busqueda y se añade el listener de eventos
@@ -152,64 +151,40 @@ public class PokedexFragment extends Fragment {
             }
         });
 
-        searchSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        //Al darle al boton de buscar, se abre el dialogo con las opciones de busqueda
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                viewModel.clearPokemonList(); //Se reinicia la lista de pokemon que habia
-                //tabLayout.selectTab(tabLayout.getTabAt(0)); //Se selecciona la pestaña de la lista principal //TODO La pestaña se queda en la de favs, pero si se cambia asi se descargan todos
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = requireActivity().getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_pokedex_search, null);
 
-                if(query.isEmpty()){ //Si la busqueda esta vacia se descargan todos los pokemon
-                    getPokemonAll();
-                }else if(searchType == 1){
-                    Log.d(TAG, "QuerySubmitText");
-                    downloadPokemonByType(query.toLowerCase());
-                }
-                searchSearchView.clearFocus();
-                return false;
+                builder.setView(dialogView)
+                        .setPositiveButton(R.string.search_diag_search, (dialog, which) -> {
+                            RadioGroup radioGroup = dialogView.findViewById(R.id.search_diag_radioGroup);
+                            TextView inputText = dialogView.findViewById(R.id.search_diag_inputText);
+
+                            int checkedId = radioGroup.getCheckedRadioButtonId(); //Obtener que radio button esta seleccionado
+                            switch (checkedId) {
+                                case R.id.search_diag_allBtn:
+                                    viewModel.clearPokemonList(); //Se reinicia para que se descarguen todos
+                                    getPokemonAll();
+                                    break;
+                                case R.id.search_diag_typeBtn:
+                                    getPokemonByType(inputText.getText().toString());
+                                    break;
+                                case R.id.search_diag_moveBtn:
+                                    getPokemonByMove(inputText.getText().toString());
+                                    break;
+                                case R.id.search_diag_habilityBtn:
+                                    getPokemonByHability(inputText.getText().toString());
+                                    break;
+                            }
+
+                        }).setNegativeButton(R.string.common_cancel, (dialog, which) -> dialog.dismiss());
+                builder.create().show();
             }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        //Listener para el boton de cancelar la escritura en el cuadro de busqueda
-        searchSearchView.setOnCloseListener(() -> {
-            viewModel.clearPokemonList();
-            getPokemonAll(); //se vuelven a descargar todos los pokemon
-            return true;
-        });
-
-        //Abrir el menu de opciones de busqueda al pulsar el boton correspondiente
-        searchSettingsButton.setOnClickListener(v -> {
-            //Se crea el menu
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(R.menu.menu_pokedex_search_settings, popup.getMenu());
-
-            //Se registra que hacer cuando se seleccione alguna opcion
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()){
-                        case R.id.pokedex_search_menu_name:
-                            Log.d(TAG, "Seleccionado buscar por nombre");
-                            return false;
-                        case R.id.pokedex_search_menu_type:
-                            Log.d(TAG, "Seleccionado buscar por tipo");
-                            return false;
-                        case R.id.pokedex_search_menu_hability:
-                            Log.d(TAG, "Seleccionado buscar por habilidad");
-                            return false;
-                        case R.id.pokedex_search_menu_move:
-                            Log.d(TAG, "Seleccionado buscar por movimiento");
-                            return false;
-                        default:
-                            return false;
-                    }
-                }
-            });
-            popup.show(); //Se muestra en el menu
         });
 
         //viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); TODO Owner activity para que sea el de la actividad
@@ -412,6 +387,44 @@ public class PokedexFragment extends Fragment {
             listToUse.addAll(viewModel.getFavsList());
             populatePokemonAdapter();
         }
+    }
+
+    private void getPokemonByType(String type){
+        //Se comprueba que el texto introducido sea un tipo que existe
+        PokemonSearchHelper searchHelper = new PokemonSearchHelper(requireContext());
+        boolean isValid = searchHelper.isValidType(type);
+
+        //Se no es valido se muestra un mensaje indicando cuales son
+        if(!isValid){
+            //Se crea el dialogo de aviso
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Tipo incorrecto. Los tipos existentes son los siguientes:\n");
+            for(String validType : searchHelper.getValidTypes()){
+                stringBuilder.append(type + ", ");
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Tipo incorrecto").setMessage(stringBuilder)
+                    .setNeutralButton("Aceptar", (dialog, which) -> dialog.dismiss());
+            builder.create().show(); //Se muestra el dialogo
+        }else {
+            //Si es valido se busca
+            //Se obtiene el nombre en ingles porque es el que acepta la API
+            String englishType = searchHelper.getTranslatedType(type);
+
+            viewModel.clearPokemonList(); //Se reinicia la lista de pokemon que habia
+            //tabLayout.selectTab(tabLayout.getTabAt(0)); //Se selecciona la pestaña de la lista principal //TODO La pestaña se queda en la de favs, pero si se cambia asi se descargan todos
+
+            downloadPokemonByType(englishType.toLowerCase());
+        }
+    }
+
+    private void getPokemonByMove(String move){
+
+    }
+
+    private void getPokemonByHability(String hability){
+
     }
 
     private void downloadPokemonAll(){

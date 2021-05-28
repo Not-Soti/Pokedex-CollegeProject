@@ -27,4 +27,6 @@
     <string name="stat_speDefense">Special defense:</string>
     <string name="stat_speed">Speed:</string>
     <string name="poke_detail_flavorTextUnknown">Pokemon data not found</string>
+    <string name="search_diag_search">Search</string>
+    <string name="common_cancel">Cancel</string>
 </resources>
