@@ -4,7 +4,6 @@ package com.example.pokedex.Persistence;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 
 import androidx.lifecycle.LiveData;
@@ -12,6 +11,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.netAccess.RestService;
+import com.example.pokedex.netAccess.WebService;
 
 import java.io.File;
 import java.io.FileInputStream;

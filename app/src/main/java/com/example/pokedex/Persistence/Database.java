@@ -78,10 +78,11 @@ public abstract class Database extends RoomDatabase {
         protected Void doInBackground(Void... voids) {
             pokeDao.deleteAll();
 
-            for(int i=1; i<=30; i++) {
+            for(int i=1; i<=6; i++) {
                 PokemonTeamEntity poke = new PokemonTeamEntity();
                 poke.setId(i);
                 poke.setNombre("Nombre del poke "+i);
+                poke.setSpecie("Especie del poke "+i);
                 poke.setMov1("mov 1 - poke " +i);
                 poke.setMov1("mov 2 - poke " +i);
                 poke.setMov1("mov 3 - poke " +i);

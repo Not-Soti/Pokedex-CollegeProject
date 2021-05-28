@@ -49,9 +49,9 @@ public class TeamFragment extends Fragment{
     //Listener utilizado para actualizar un pokemon en la BBDD cuando se elige otro movimiento
     private SpinnerSelectedListener spinnerSelectedListener = new SpinnerSelectedListener() {
         @Override
-        public void onItemSelected(Pokemon pokemon, String nombre, String[] moves) {
+        public void onItemSelected(Pokemon pokemon, String specie,  String nombre, String[] moves) {
             Log.d(TAG, "ItemSelected del fragment");
-            viewModel.updatePokemon(pokemon.getId(), nombre, moves);
+            viewModel.updatePokemon(pokemon.getId(),specie, nombre, moves);
         }
 
         @Override
@@ -171,6 +171,7 @@ public class TeamFragment extends Fragment{
                 for(PokemonTeamEntity pokemonDB : viewModel.getPokemonTeam().getValue()){
                     //Se busca el pokemon en las 2 listas y se copian los datos de uno a otro
                     if (pokemon.getId() == pokemonDB.getId()){
+                        pokemon.setSavedName(pokemonDB.getNombre());
                         pokemon.savedMoves = new ArrayList<>();
                         pokemon.savedMoves.add(pokemonDB.getMov1());
                         pokemon.savedMoves.add(pokemonDB.getMov2());

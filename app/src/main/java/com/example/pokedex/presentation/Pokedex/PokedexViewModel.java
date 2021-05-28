@@ -134,7 +134,8 @@ public class PokedexViewModel extends AndroidViewModel {
 
         PokemonTeamEntity pokemonDAO = new PokemonTeamEntity();
         pokemonDAO.setId(pokemon.getId());
-        pokemonDAO.setNombre(pokemon.getName());
+        pokemonDAO.setSpecie(pokemon.getName()); //Aqui el nombre y la especie es el mismo
+        pokemonDAO.setNombre(pokemon.getName()); //En el equipo se puede poner un nombre propio
         repository.insertPokemonIntoTeam(pokemonDAO);
     }
 

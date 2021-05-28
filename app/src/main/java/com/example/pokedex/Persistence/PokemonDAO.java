@@ -32,11 +32,12 @@ public interface PokemonDAO {
     void removePokemonById(int id);
 
     @Query("UPDATE pokemon_table SET " +
+            "specie = :specie," +
             "nombre = :name," +
             "mov1 = :mov1," +
             "mov2 = :mov2," +
             "mov3 = :mov3," +
             "mov4 = :mov4 " +
             "WHERE id = :id")
-    void updatePokemon(int id, String name, String mov1, String mov2, String mov3, String mov4);
+    void updatePokemon(int id,String specie, String name, String mov1, String mov2, String mov3, String mov4);
 }

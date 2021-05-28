@@ -21,6 +21,14 @@ public class Pokemon {
     public boolean isInTeam = false; //Indica si el pokemon forma parte del equipo
     public List<String> savedMoves = null; //Lista de movimientos, se inicializa cuando se cargan de la BBDD
 
+    public String savedName; //Nombre con el que se guarda en la BBDD
+
+    public String getSavedName(){
+        return savedName;
+    }
+
+    public void setSavedName(String savedName){this.savedName = savedName;}
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if(obj == this){

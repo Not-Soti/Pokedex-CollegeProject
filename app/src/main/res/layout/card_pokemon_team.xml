@@ -8,7 +8,8 @@
     android:layout_marginRight="@dimen/pokedex_card_margin"
     android:layout_marginBottom="@dimen/pokedex_card_margin"
     android:background="@drawable/pokemon_card_border"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:elevation="5dp">
 
     <ImageView
         android:id="@+id/card_team_sprite"
@@ -22,7 +23,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
 
-    <TextView
+<!--    <TextView
         android:id="@+id/card_team_nameTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,7 +34,28 @@
         android:textSize="@dimen/pokedex_card_name_textSize"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/card_team_sprite"
-        app:layout_constraintTop_toTopOf="@+id/card_team_sprite" />
+        app:layout_constraintTop_toTopOf="@+id/card_team_sprite" />-->
+
+    <EditText
+        android:id="@+id/card_team_nameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        app:layout_constraintStart_toEndOf="@+id/card_team_sprite"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/card_team_speciesTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/card_team_nameText"
+        app:layout_constraintTop_toBottomOf="@+id/card_team_nameText" />
 
     <Spinner
         android:id="@+id/card_team_mov1Spinner"
@@ -83,12 +105,13 @@
         android:id="@+id/card_team_removeFromTeam_button"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:background="@drawable/ic_team_on"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/card_team_nameTv" />
+        app:layout_constraintTop_toTopOf="@+id/card_team_nameText" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

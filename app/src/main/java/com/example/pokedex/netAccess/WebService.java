@@ -1,4 +1,4 @@
-package com.example.pokedex.Persistence;
+package com.example.pokedex.netAccess;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

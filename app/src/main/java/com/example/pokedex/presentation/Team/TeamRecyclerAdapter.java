@@ -2,12 +2,14 @@ package com.example.pokedex.presentation.Team;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -62,9 +64,13 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         //Log.d("-------adapter", "Pokenombre: "+poke.getName());
 
         //Nombre
-        String pokemonName = pokemon.getName();
+        String pokemonName = pokemon.getSavedName();
         String capitalizedName = pokemonName.substring(0,1).toUpperCase() + pokemonName.substring(1); //Poner la primera letra en mayuscula
-        holder.nameTv.setText(capitalizedName);
+        holder.nameEditText.setText(capitalizedName);
+
+        //Especie
+        String pokemonSpecie = pokemon.getSpecies().getName();
+        holder.specieTv.setText(pokemonSpecie);
 
         //Imagen
         holder.imageView.setBackground(pokemon.listSprite);
@@ -124,7 +130,9 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder implements AdapterView.OnItemSelectedListener, View.OnClickListener{
 
-        public TextView nameTv;
+        //public TextView nameTv;
+        public EditText nameEditText;
+        public TextView specieTv;
         public ImageView imageView;
         public Spinner mov1Spi, mov2Spi, mov3Spi, mov4Spi;
         public ImageButton removeButton;
@@ -133,16 +141,24 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTv = itemView.findViewById(R.id.card_team_nameTv);
+            nameEditText = itemView.findViewById(R.id.card_team_nameText);
             imageView = itemView.findViewById(R.id.card_team_sprite);
             mov1Spi = itemView.findViewById(R.id.card_team_mov1Spinner);
             mov2Spi = itemView.findViewById(R.id.card_team_mov2Spinner);
             mov3Spi = itemView.findViewById(R.id.card_team_mov3Spinner);
             mov4Spi = itemView.findViewById(R.id.card_team_mov4Spinner);
             removeButton = itemView.findViewById(R.id.card_team_removeFromTeam_button);
+            specieTv = itemView.findViewById(R.id.card_team_speciesTv);
 
             movSpinners = new Spinner[]{mov1Spi, mov2Spi, mov3Spi, mov4Spi};
 
+            nameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    Log.d("TAG", "GUARDAR POKE");
+                    return false;
+                }
+            });
 
         }
 
@@ -150,13 +166,14 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Log.d(TAG, "Item selected de dentrooo");
             String nombre = pokemon.getName();
+            String especie = pokemon.getSpecies().getName();
             String mov1 = mov1Spi.getSelectedItem().toString();
             String mov2 = mov2Spi.getSelectedItem().toString();
             String mov3 = mov3Spi.getSelectedItem().toString();
             String mov4 = mov4Spi.getSelectedItem().toString();
             String[] moves = {mov1, mov2, mov3, mov4};
 
-            spinnerSelectedListener.onItemSelected(pokemon, nombre, moves);
+            spinnerSelectedListener.onItemSelected(pokemon, especie, nombre, moves);
         }
 
         @Override

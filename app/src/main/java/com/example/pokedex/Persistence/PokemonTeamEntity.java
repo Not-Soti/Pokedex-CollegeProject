@@ -12,7 +12,8 @@ public class PokemonTeamEntity {
     @PrimaryKey
     @NonNull
     private int id;
-    private String nombre;
+    private String nombre; //Nombre del pokemon: Ej: Manolo
+    private String specie; //Especie del pokemon: Ej: Pikachu, bulbasaur...
     private String mov1, mov2, mov3, mov4;
 
     public int getId() {
@@ -61,5 +62,13 @@ public class PokemonTeamEntity {
 
     public void setMov4(String mov4) {
         this.mov4 = mov4;
+    }
+
+    public String getSpecie() {
+        return specie;
+    }
+
+    public void setSpecie(String specie) {
+        this.specie = specie;
     }
 }
