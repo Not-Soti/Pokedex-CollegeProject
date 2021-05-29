@@ -1,5 +1,6 @@
 package com.example.pokedex.netAccess;
 
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.PokemonIndex;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.model.pokeApiModel.PokemonSpeciesDetail;
@@ -44,4 +45,7 @@ public interface RestService {
      */
     @GET("type/{type_string}")
     Call<TypeDetail> getPokemonTypeDetail(@Path("type_string") String type);
+
+    @GET("move/{move_id}")
+    Call<MoveDetail> getMoveDetailByIds(@Path("move_id") int move_id);
 }

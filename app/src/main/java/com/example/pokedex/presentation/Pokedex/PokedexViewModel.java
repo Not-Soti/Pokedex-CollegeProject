@@ -10,8 +10,11 @@ import androidx.lifecycle.LiveData;
 
 import com.example.pokedex.Persistence.PokemonTeamEntity;
 import com.example.pokedex.Persistence.Repository;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class PokedexViewModel extends AndroidViewModel {
 
     private final ObservableArrayList<Pokemon> pokemonList;
     private final ObservableArrayList<Pokemon> favsList;
+    private ObservableArrayList<MoveDetail> moves;
 
     private LiveData<List<PokemonTeamEntity>> pokemonTeam;
 
@@ -39,6 +43,7 @@ public class PokedexViewModel extends AndroidViewModel {
         favPokemonIDs = repository.getFavouritePokemon();
         pokemonTeam = repository.getPokemonTeam();
 
+        moves = new ObservableArrayList<>();
     }
 
     /**
@@ -63,6 +68,11 @@ public class PokedexViewModel extends AndroidViewModel {
 
     public void updatePokemonListByType(int count, String type){
         repository.downloadPokemonByType(count, pokemonList, type);
+    }
+
+    public void updatePokemonListByMove(int count, int moveID){
+        Log.d(TAG, "Move ID = "+moveID);
+        repository.downloadPokemonByMove(count, pokemonList, moveID);
     }
 
     public void updateFavList(){
@@ -152,5 +162,17 @@ public class PokedexViewModel extends AndroidViewModel {
 
     public void clearFavsList(){
         favsList.clear();
+    }
+
+    /**Metodo usado para descargar los movimientos
+     *
+     * @param moveCount id del movimiento con id mas alto
+     */
+    public void updateMoves(int moveCount) {
+        repository.downloadMoves(moves, moveCount);
+    }
+
+    public ObservableArrayList<MoveDetail> getMoveList(){
+        return moves;
     }
 }

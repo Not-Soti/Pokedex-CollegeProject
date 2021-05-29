@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableList;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,16 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.PopupMenu;
-import android.widget.RadioGroup;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -66,6 +64,7 @@ public class PokedexFragment extends Fragment {
     private int pokemonCount = 10;
 
     private final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
+    private final int MAX_MOVE_NUMBER = 621; //Numero total de movimientos en la API
 
     private ButtonFavListener favListener = new ButtonFavListener() {
         @Override
@@ -156,39 +155,30 @@ public class PokedexFragment extends Fragment {
             @SuppressLint("NonConstantResourceId")
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = requireActivity().getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.dialog_pokedex_search, null);
+
 
                 builder.setView(dialogView)
                         .setPositiveButton(R.string.search_diag_search, (dialog, which) -> {
                             RadioGroup radioGroup = dialogView.findViewById(R.id.search_diag_radioGroup);
                             TextView inputText = dialogView.findViewById(R.id.search_diag_inputText);
+                            Spinner spinner = dialogView.findViewById(R.id.search_diag_spinner);
 
-                            int checkedId = radioGroup.getCheckedRadioButtonId(); //Obtener que radio button esta seleccionado
-                            switch (checkedId) {
-                                case R.id.search_diag_allBtn:
-                                    viewModel.clearPokemonList(); //Se reinicia para que se descarguen todos
-                                    getPokemonAll();
-                                    break;
-                                case R.id.search_diag_typeBtn:
-                                    getPokemonByType(inputText.getText().toString());
-                                    break;
-                                case R.id.search_diag_moveBtn:
-                                    getPokemonByMove(inputText.getText().toString());
-                                    break;
-                                case R.id.search_diag_habilityBtn:
-                                    getPokemonByHability(inputText.getText().toString());
-                                    break;
-                            }
 
                         }).setNegativeButton(R.string.common_cancel, (dialog, which) -> dialog.dismiss());
-                builder.create().show();
+                builder.create().show();*/
+
+                SearchFragment searchFragment = new SearchFragment();
+                FragmentManager fragmentManager = getChildFragmentManager();
+                searchFragment.show(fragmentManager, "search_dialog");
+                
             }
         });
 
-        //viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); TODO Owner activity para que sea el de la actividad
-        viewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class); //TODO Owner activity para que sea el de la actividad
+        //viewModel = new ViewModelProvider(this).get(PokedexViewModel.class);
 
         viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
             viewModel.updateIDsInTeam();
@@ -200,7 +190,11 @@ public class PokedexFragment extends Fragment {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             int numberOfPokemonTeam = prefs.getInt("cantidad_equipo", 0);
             if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()){
-                getPokemonAll(); //Descargar pokemon
+                if(viewModel.getMoveList().isEmpty()) {
+                    getMoves(); //Se descargan los movimientos si no estan descargados
+                }else{
+                    getPokemonAll(); //Si no, descargar pokemon
+                }
             }
         });
 
@@ -320,11 +314,48 @@ public class PokedexFragment extends Fragment {
             }
         });
 
+        viewModel.getMoveList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<MoveDetail>>() {
+            @Override
+            public void onChanged(ObservableList<MoveDetail> sender) {
+
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
+
+                if(sender.size() == MAX_MOVE_NUMBER){
+                    //Si se descargaron todos los movimientos, se ordenan por ID y se pasa a descargar los pokemon
+                    Collections.sort(viewModel.getMoveList(), (m1, m2) -> m1.getId() - m2.getId());
+
+                    if(progressDialog != null){
+                        progressDialog.dismiss();
+                    }
+
+                    getPokemonAll(); //Descargar pokemon
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<MoveDetail> sender, int fromPosition, int toPosition, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+
+            }
+        });
+
         recyclerView = theView.findViewById(R.id.pokedexFrag_recyclerView);
         tabLayout = theView.findViewById(R.id.pokedexFrag_TabLayout);
-
-        //repository = new Repository(getContext(), pokedexViewModel);
-
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -364,7 +395,7 @@ public class PokedexFragment extends Fragment {
     }
 
 
-    private void getPokemonAll(){
+    protected void getPokemonAll(){
         //Descargar los pokemon si no se han descargado ya antes
         if(viewModel.getPokemonList().isEmpty()) {
             downloadPokemonAll();
@@ -377,7 +408,7 @@ public class PokedexFragment extends Fragment {
         }
     }
 
-    private void getPokemonFavs(){
+    protected void getPokemonFavs(){
         if(viewModel.getFavsList().size() != viewModel.getFavPokemonIDs().size()){
             viewModel.clearFavsList();
             downloadPokemonFavs();
@@ -389,7 +420,7 @@ public class PokedexFragment extends Fragment {
         }
     }
 
-    private void getPokemonByType(String type){
+    protected void getPokemonByType(String type){
         //Se comprueba que el texto introducido sea un tipo que existe
         PokemonSearchHelper searchHelper = new PokemonSearchHelper(requireContext());
         boolean isValid = searchHelper.isValidType(type);
@@ -419,11 +450,13 @@ public class PokedexFragment extends Fragment {
         }
     }
 
-    private void getPokemonByMove(String move){
+    protected void getPokemonByMove(int moveId){
+        viewModel.clearPokemonList();
+        downloadPokemonByMove(moveId);
 
     }
 
-    private void getPokemonByHability(String hability){
+    protected void getPokemonByHability(String hability){
 
     }
 
@@ -433,7 +466,7 @@ public class PokedexFragment extends Fragment {
         //cuando acabe la descarga.
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setTitle("Descargando");
-        progressDialog.setMessage("Se está descargando la informacion necesaria");
+        progressDialog.setMessage("Estudiando las características de los pokemon");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -467,6 +500,21 @@ public class PokedexFragment extends Fragment {
         progressDialog.show();
         viewModel.updatePokemonListByType(pokemonCount, type);
     }
+
+
+    private void downloadPokemonByMove(int moveID){
+        Log.d(TAG, "downloadPokemonByMove");
+        isPerformingSearch = true; //Se descargan los que encajen con el parametro indicado
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Se está descargando la informacion necesaria");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        viewModel.updatePokemonListByMove(pokemonCount, moveID);
+    }
+
 
     /**
      * Puebla el adaptador con los pokemon necesarios
@@ -538,5 +586,22 @@ public class PokedexFragment extends Fragment {
         listToUse.addAll(listToFilter);
         populatePokemonAdapter();
     }
+
+    /**
+     * Metodo utilizado para descargar los movimientos existentes
+     * y su traduccion
+     */
+    private void getMoves(){
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Aprendiendo movimientos de los Pokémon");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(MAX_MOVE_NUMBER);
+        progressDialog.show();
+        viewModel.updateMoves(MAX_MOVE_NUMBER);
+    }
+
 
 }

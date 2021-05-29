@@ -265,12 +265,12 @@ public class PokemonDetailFragment extends Fragment {
                 PokemonSpeciesDetail detail = response.body();
                 String flavor = getContext().getString(R.string.poke_detail_flavorTextUnknown);
 
-                //Si se ha obtenido una respuesta válida se busca la entrada en español
+                //Si se ha obtenido una respuesta válida se busca la entrada en el idioma correcto
                 if(detail!=null) {
                     List<FlavorTextEntry> entries = detail.getFlavorTextEntries();
                     boolean hasEntrie = false;
                     int pos = 0;
-                    //Se recorren todas las entradas hasta encontrar la que esta en español
+                    //Se recorren todas las entradas hasta encontrar la que esta en el idioma requerido
                     while ((!hasEntrie) && (pos < entries.size())) {
                         //Se obtiene el lenguaje de la entrada
                         Language lang = entries.get(pos).getLanguage();

@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 
+import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
 
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.netAccess.RestService;
 import com.example.pokedex.netAccess.WebService;
@@ -20,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -76,6 +80,11 @@ public class Repository {
 
         WebService webService = new WebService(context);
         webService.downloadPokemonByType(pokemonCount, pokemonList, type);
+    }
+
+    public void downloadPokemonByMove(int count, ObservableArrayList<Pokemon> pokemonList, int moveID) {
+        WebService webService = new WebService(context);
+        webService.downloadPokemonByMove(count, pokemonList, moveID);
     }
 
     public void downloadPokemonById(int id, List<Pokemon> pokemonList){
@@ -199,5 +208,11 @@ public class Repository {
     public void updatePokemonInTeam(PokemonTeamEntity poke){
         new UpdateInTeamAsyncTask(pokemonDAO).execute(poke);
     }
+
+    public void downloadMoves(List<MoveDetail> moves, int moveCount) {
+        WebService webService = new WebService(context);
+        webService.downloadMoves(moves, moveCount);
+    }
+
 
 }

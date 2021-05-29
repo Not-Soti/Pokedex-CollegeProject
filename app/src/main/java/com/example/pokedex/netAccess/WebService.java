@@ -5,8 +5,15 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.databinding.ObservableArrayList;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokeApiModel.Language;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Language;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Language__3;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_LearnedByPokemon;
+import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Name;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.model.pokeApiModel.PokemonIndex;
 import com.example.pokedex.model.pokeApiModel.PokemonIndexItem;
@@ -21,9 +28,11 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,7 +50,10 @@ public class WebService {
     private Gson gson;
     private Retrofit retrofit;
 
-    //private boolean treatingFavPokemon;
+    //Campo que indica el lenguaje del sistema, usado para obtener
+    //los elementos en el idioma correspondiente
+    private String systemLanguaje;
+
 
     public WebService(Context c){
         context = c;
@@ -57,6 +69,8 @@ public class WebService {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         restService = retrofit.create(RestService.class);
+
+
     }
 
     public void getPokemonFromJSON(int pokemonCount, List<Pokemon> pokemonList){
@@ -184,18 +198,19 @@ public class WebService {
                 //Se obtiene la informacion generica del tipo pokemon
                 TypeDetail typeDetail = response.body();
 
-                //Se obtiene la lista de pokemon de dicho tipo
-                LinkedList<TypeDetail_Pokemon> lista = new LinkedList<>(typeDetail.getPokemon());
+                if(typeDetail!=null){//Se obtiene la lista de pokemon de dicho tipo
+                    LinkedList<TypeDetail_Pokemon> lista = new LinkedList<>(typeDetail.getPokemon());
 
-                //Se recorren los pokemon buscando su ID, para luego descargarlos individualmente
-                for(TypeDetail_Pokemon poke : lista){
-                    TypeDetail_Pokemon__1 pokemonAux = poke.getPokemon(); //Transicion necesaria para obtener el ID
+                    //Se recorren los pokemon buscando su ID, para luego descargarlos individualmente
+                    for (TypeDetail_Pokemon poke : lista) {
+                        TypeDetail_Pokemon__1 pokemonAux = poke.getPokemon(); //Transicion necesaria para obtener el ID
 
-                    String[] url_split = pokemonAux.getUrl().split("/"); //El ID es el ultimo elemento de la URL
-                    int id = Integer.parseInt(url_split[url_split.length-1]);
+                        String[] url_split = pokemonAux.getUrl().split("/"); //El ID es el ultimo elemento de la URL
+                        int id = Integer.parseInt(url_split[url_split.length - 1]);
 
-                    if(id <= pokemonCount) {
-                        getPokemonByID(id, pokemonList);
+                        if (id <= pokemonCount) {
+                            getPokemonByID(id, pokemonList);
+                        }
                     }
                 }
             }
@@ -206,5 +221,57 @@ public class WebService {
             }
         });
 
+    }
+
+    public void downloadPokemonByMove(int pokemonCount, ObservableArrayList<Pokemon> pokemonList, int moveID) {
+        restService.getMoveDetailByIds(moveID).enqueue(new Callback<MoveDetail>() {
+            @Override
+            public void onResponse(Call<MoveDetail> call, Response<MoveDetail> response) {
+                MoveDetail moveDetail = response.body();
+
+                if(moveDetail != null){
+                    LinkedList<MoveDetail_LearnedByPokemon> lista = new LinkedList<>(moveDetail.getMoveDetailLearnedByPokemon());
+
+                    //Se recorren los pokemon buscando su ID, para luego descargarlos individualmente
+                    for (MoveDetail_LearnedByPokemon poke : lista) {
+                        String pokemonURL = poke.getUrl(); //Transicion necesaria para obtener el ID
+
+                        String[] url_split = pokemonURL.split("/"); //El ID es el ultimo elemento de la URL
+                        int id = Integer.parseInt(url_split[url_split.length - 1]);
+
+                        if (id <= pokemonCount) {
+                            Log.d(TAG, "Id" + id);
+                            getPokemonByID(id, pokemonList);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MoveDetail> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void downloadMoves(List<MoveDetail> moves, int moveCount) {
+        //Se descargan los movimientos 1 a 1 y se añaden al hashmap.
+        for(int i=1; i<=moveCount; i++){
+            restService.getMoveDetailByIds(i).enqueue(new Callback<MoveDetail>() {
+                @Override
+                public void onResponse(Call<MoveDetail> call, Response<MoveDetail> response) {
+                    MoveDetail moveDetail = response.body();
+
+                    if(moveDetail != null){
+                        moves.add(moveDetail);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MoveDetail> call, Throwable t) {
+
+                }
+            });
+        }
     }
 }
