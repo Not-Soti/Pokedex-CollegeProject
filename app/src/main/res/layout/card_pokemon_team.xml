@@ -52,8 +52,11 @@
         android:id="@+id/card_team_speciesTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@+id/card_team_nameText"
         app:layout_constraintTop_toBottomOf="@+id/card_team_nameText" />
 
@@ -98,6 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Movimientos:"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@+id/card_team_sprite"
         app:layout_constraintTop_toBottomOf="@+id/card_team_sprite" />
 

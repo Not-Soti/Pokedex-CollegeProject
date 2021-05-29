@@ -49,9 +49,9 @@ public class TeamFragment extends Fragment{
     //Listener utilizado para actualizar un pokemon en la BBDD cuando se elige otro movimiento
     private SpinnerSelectedListener spinnerSelectedListener = new SpinnerSelectedListener() {
         @Override
-        public void onItemSelected(Pokemon pokemon, String specie,  String nombre, String[] moves) {
+        public void onItemSelected(Pokemon pokemon, String especie,  String nombre, String[] moves) {
             Log.d(TAG, "ItemSelected del fragment");
-            viewModel.updatePokemon(pokemon.getId(),specie, nombre, moves);
+            viewModel.updatePokemon(pokemon.getId(),especie, nombre, moves);
         }
 
         @Override
@@ -71,6 +71,16 @@ public class TeamFragment extends Fragment{
     public TeamFragment() {
         // Required empty public constructor
     }
+
+    //Listener utilizado para cuando se cambia el nombre del pokemon
+    //Se activa cuando en el teclado se presiona la tecla Enter
+    private EditTextChangedListener nameChangedListener = new EditTextChangedListener() {
+        @Override
+        public void onEditorAction(Pokemon pokemon, String specie, String name, String[] moves) {
+            Log.d(TAG, "onEditorAction desde el fragment");
+            viewModel.updatePokemon(pokemon.getId(),specie, name, moves);
+        }
+    };
 
     /**
      * Factory method
@@ -183,7 +193,7 @@ public class TeamFragment extends Fragment{
 
             act.runOnUiThread(() -> {
                 if (progressDialog != null) progressDialog.dismiss();
-                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), spinnerSelectedListener, removeButtonListener);
+                TeamRecyclerAdapter pokemonAdapter = new TeamRecyclerAdapter(getContext(), viewModel.getPokemonList(), spinnerSelectedListener, removeButtonListener, nameChangedListener);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerView.setAdapter(pokemonAdapter);
             });

@@ -37,13 +37,15 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
     private Context context;
     private SpinnerSelectedListener spinnerSelectedListener;
     private DeleteButtonListener deleteButtonListener;
+    private EditTextChangedListener nameChangedListener;
 
-    public TeamRecyclerAdapter(Context c, ObservableArrayList<Pokemon> source, SpinnerSelectedListener spinnerListener, DeleteButtonListener deleteListener){
+    public TeamRecyclerAdapter(Context c, ObservableArrayList<Pokemon> source, SpinnerSelectedListener spinnerListener, DeleteButtonListener deleteListener, EditTextChangedListener nameListener){
         context = c;
         layoutInflater = LayoutInflater.from(context);
         sourceList=source;
         spinnerSelectedListener = spinnerListener;
         deleteButtonListener = deleteListener;
+        nameChangedListener = nameListener;
     }
 
 
@@ -65,12 +67,12 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
         //Nombre
         String pokemonName = pokemon.getSavedName();
-        String capitalizedName = pokemonName.substring(0,1).toUpperCase() + pokemonName.substring(1); //Poner la primera letra en mayuscula
-        holder.nameEditText.setText(capitalizedName);
+        holder.nameEditText.setText(pokemonName);
 
         //Especie
         String pokemonSpecie = pokemon.getSpecies().getName();
-        holder.specieTv.setText(pokemonSpecie);
+        String capitalizedSpecie = pokemonSpecie.substring(0,1).toUpperCase() + pokemonSpecie.substring(1); //Poner la primera letra en mayuscula
+        holder.specieTv.setText(capitalizedSpecie);
 
         //Imagen
         holder.imageView.setBackground(pokemon.listSprite);
@@ -115,6 +117,9 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
         //Remove button listener
         holder.removeButton.setOnClickListener(holder);
+
+        //Listener del editText del nombre
+        holder.nameEditText.setOnEditorActionListener(holder);
     }
 
     @Override
@@ -128,7 +133,7 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
         notifyDataSetChanged();
     }*/
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements AdapterView.OnItemSelectedListener, View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements AdapterView.OnItemSelectedListener, View.OnClickListener, TextView.OnEditorActionListener{
 
         //public TextView nameTv;
         public EditText nameEditText;
@@ -152,20 +157,12 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
 
             movSpinners = new Spinner[]{mov1Spi, mov2Spi, mov3Spi, mov4Spi};
 
-            nameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    Log.d("TAG", "GUARDAR POKE");
-                    return false;
-                }
-            });
-
         }
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Log.d(TAG, "Item selected de dentrooo");
-            String nombre = pokemon.getName();
+            String nombre = nameEditText.getText().toString();
             String especie = pokemon.getSpecies().getName();
             String mov1 = mov1Spi.getSelectedItem().toString();
             String mov2 = mov2Spi.getSelectedItem().toString();
@@ -187,6 +184,20 @@ public class TeamRecyclerAdapter extends RecyclerView.Adapter<TeamRecyclerAdapte
             if (v.equals(removeButton)){
                 deleteButtonListener.onClick(pokemon);
             }
+        }
+
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            Log.d(TAG, "onEditorAction desde el holder");
+            String nombre = nameEditText.getText().toString();
+            String especie = pokemon.getSpecies().getName();
+            String mov1 = mov1Spi.getSelectedItem().toString();
+            String mov2 = mov2Spi.getSelectedItem().toString();
+            String mov3 = mov3Spi.getSelectedItem().toString();
+            String mov4 = mov4Spi.getSelectedItem().toString();
+            String[] moves = {mov1, mov2, mov3, mov4};
+            nameChangedListener.onEditorAction(pokemon, especie, nombre, moves);
+            return true;
         }
     }
 }
