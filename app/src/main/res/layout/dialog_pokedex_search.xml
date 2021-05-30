@@ -52,7 +52,7 @@
 
     </RadioGroup>
 
-    <EditText
+<!--    <EditText
         android:id="@+id/search_diag_inputText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,16 +62,16 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_diag_radioGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/search_diag_radioGroup" />-->
 
     <Spinner
         android:id="@+id/search_diag_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_diag_inputText" />
+        app:layout_constraintTop_toBottomOf="@+id/search_diag_radioGroup" />
 
     <Button
         android:id="@+id/search_diag_searchBtn"
@@ -82,5 +82,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_diag_spinner" />
+
+    <Space
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

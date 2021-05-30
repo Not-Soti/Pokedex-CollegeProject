@@ -35,7 +35,7 @@ public class SearchFragment extends DialogFragment {
 
     private RadioGroup radioGroup;
     private Button searchButton;
-    private EditText editText;
+    //private EditText editText;
     private Spinner spinner;
     private PokedexViewModel viewModel;
 
@@ -52,7 +52,7 @@ public class SearchFragment extends DialogFragment {
 
         radioGroup = view.findViewById(R.id.search_diag_radioGroup);
         searchButton = view.findViewById(R.id.search_diag_searchBtn);
-        editText = view.findViewById(R.id.search_diag_inputText);
+        //editText = view.findViewById(R.id.search_diag_inputText);
         spinner = view.findViewById(R.id.search_diag_spinner);
 
         viewModel = new ViewModelProvider(requireActivity()).get(PokedexViewModel.class);
@@ -68,6 +68,11 @@ public class SearchFragment extends DialogFragment {
                 }else if(checkedId == R.id.search_diag_habilityBtn){
                     ArrayList<String> translatedAbilities = getTranslatedAbilities(); //Se obtienen las traducciones de las habilidades
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, translatedAbilities);
+                    adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
+                }else if(checkedId == R.id.search_diag_typeBtn){
+                    ArrayList<String> translatedTypes = getTranslatedTypes(); //Se obtienen los tipos de los pokemon traducidos
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, translatedTypes);
                     adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                     spinner.setAdapter(adapter);
                 }
@@ -86,7 +91,8 @@ public class SearchFragment extends DialogFragment {
                         dismiss();
                         break;
                     case R.id.search_diag_typeBtn:
-                        ((PokedexFragment) getParentFragment()).getPokemonByType(editText.getText().toString());
+                        String selectedType = spinner.getSelectedItem().toString();
+                        ((PokedexFragment) getParentFragment()).getPokemonByType(selectedType);
                         dismiss();
                         break;
                     case R.id.search_diag_moveBtn:
@@ -103,23 +109,6 @@ public class SearchFragment extends DialogFragment {
                         dismiss();
                         break;
                 }
-            }
-        });
-
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d(TAG, "BeforeTextChanged");
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d(TAG, "OnTextChanged");
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d(TAG, "AfterTextChanged");
             }
         });
 
@@ -186,6 +175,31 @@ public class SearchFragment extends DialogFragment {
             result.add(translatedAbility);
         }
 
+        return result;
+    }
+    
+    private ArrayList<String> getTranslatedTypes(){
+        ArrayList<String> result = new ArrayList<>();
+
+        result.add(getString(R.string.type_steel));
+        result.add(getString(R.string.type_water));
+        result.add(getString(R.string.type_bug));
+        result.add(getString(R.string.type_dragon));
+        result.add(getString(R.string.type_electric));
+        result.add(getString(R.string.type_normal));
+        result.add(getString(R.string.type_fire));
+        result.add(getString(R.string.type_grass));
+        result.add(getString(R.string.type_ice));
+        result.add(getString(R.string.type_fighting));
+        result.add(getString(R.string.type_poison));
+        result.add(getString(R.string.type_ground));
+        result.add(getString(R.string.type_flying));
+        result.add(getString(R.string.type_psychic));
+        result.add(getString(R.string.type_rock));
+        result.add(getString(R.string.type_ghost));
+        result.add(getString(R.string.type_dark));
+        result.add(getString(R.string.type_fairy));
+        
         return result;
     }
 }
