@@ -2,6 +2,8 @@ package com.example.pokedex.presentation.Pokedex;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail_Language__3;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail_Name;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Language__3;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Name;
@@ -36,6 +41,8 @@ public class SearchFragment extends DialogFragment {
 
     private String TAG = "--SearchFragment--";
 
+    private String systemLanguaje; //Lenguaje del sistema, para obtener traducciones
+
     public SearchFragment(){}
 
     @Nullable
@@ -53,13 +60,15 @@ public class SearchFragment extends DialogFragment {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, "Pulsado");
                 if(checkedId == R.id.search_diag_moveBtn){
-                    Log.d(TAG, "PULSADO");
                     ArrayList<String> translatedMoves = getTranslatedMoves(); //Se obtienen las traducciones de los movimientos
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, translatedMoves);
                     adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-
+                    spinner.setAdapter(adapter);
+                }else if(checkedId == R.id.search_diag_habilityBtn){
+                    ArrayList<String> translatedAbilities = getTranslatedAbilities(); //Se obtienen las traducciones de las habilidades
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, translatedAbilities);
+                    adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                     spinner.setAdapter(adapter);
                 }
             }
@@ -88,12 +97,39 @@ public class SearchFragment extends DialogFragment {
                         dismiss();
                         break;
                     case R.id.search_diag_habilityBtn:
-                        ((PokedexFragment) getParentFragment()).getPokemonByHability(editText.getText().toString());
+                        int selectedAbility = spinner.getSelectedItemPosition();
+                        int abilityIdToSearch = viewModel.getAbilityList().get(selectedAbility).getId();
+                        ((PokedexFragment) getParentFragment()).getPokemonByHability(abilityIdToSearch);
                         dismiss();
                         break;
                 }
             }
         });
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d(TAG, "BeforeTextChanged");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(TAG, "OnTextChanged");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d(TAG, "AfterTextChanged");
+            }
+        });
+
+        //Se obtiene el lenguaje del sistema. Si no es español, se usa ingles por defecto
+        Locale locale = Locale.getDefault();
+        if (locale.getLanguage().equals(new Locale("es").getLanguage())){
+            systemLanguaje = "es";
+        }else{
+            systemLanguaje = "en";
+        }
 
         return view;
     }
@@ -101,21 +137,11 @@ public class SearchFragment extends DialogFragment {
     private ArrayList<String> getTranslatedMoves(){
         ArrayList<String> result = new ArrayList<>();
 
-        //Se obtiene el lenguaje del sistema. Si no es español, se usa ingles por defecto
-        Locale locale = Locale.getDefault();
-        String systemLanguaje;
-        if (locale.getLanguage().equals(new Locale("es").getLanguage())){
-            systemLanguaje = "es";
-        }else{
-            systemLanguaje = "en";
-        }
-
         //Se recorren todos los movimientos buscando su traduccion
         for(MoveDetail moveDetail : viewModel.getMoveList()) {
-            String moveStringId = moveDetail.getName();
             String translatedMove = "";
 
-            //Si se ha obtenido una respuesta válida se busca la entrada en el idioma correcto
+            //Se busca la entrada en el idioma correcto
             List<MoveDetail_Name> listOfLanguajes = moveDetail.getMoveDetailNames(); //Lista con el nombre en los diferentes idiomas
             boolean hasEntrie = false;
             int pos = 0;
@@ -133,6 +159,33 @@ public class SearchFragment extends DialogFragment {
 
             result.add(translatedMove);
         }
+        return result;
+    }
+
+    private ArrayList<String> getTranslatedAbilities(){
+        ArrayList<String> result = new ArrayList<>();
+
+        for(AbilityDetail abilityDetail : viewModel.getAbilityList()){
+            String translatedAbility = "";
+
+            //Se busca el idioma correcto
+            List<AbilityDetail_Name> listOfLanguajes = abilityDetail.getAbilityDetailNames();
+            boolean hasEntrie = false;
+            int pos = 0;
+            //Se recorren todas las entradas hasta encontrar la que esta en el idioma requerido
+            while ((!hasEntrie) && (pos < listOfLanguajes.size())) {
+                //Se obtiene el lenguaje de la entrada
+                AbilityDetail_Language__3 lang = listOfLanguajes.get(pos).getLanguage();
+
+                if (lang.getName().equals(systemLanguaje)) {
+                    translatedAbility = listOfLanguajes.get(pos).getName();
+                    hasEntrie = true;
+                }
+                pos++;
+            }
+            result.add(translatedAbility);
+        }
+
         return result;
     }
 }

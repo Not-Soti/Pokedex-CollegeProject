@@ -10,6 +10,7 @@ import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
 
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.example.pokedex.netAccess.RestService;
@@ -85,6 +86,11 @@ public class Repository {
     public void downloadPokemonByMove(int count, ObservableArrayList<Pokemon> pokemonList, int moveID) {
         WebService webService = new WebService(context);
         webService.downloadPokemonByMove(count, pokemonList, moveID);
+    }
+
+    public void downloadPokemonByAbility(int count, ObservableArrayList<Pokemon> pokemonList, int abilityID) {
+        WebService webService = new WebService(context);
+        webService.downloadPokemonByAbility(count, pokemonList, abilityID);
     }
 
     public void downloadPokemonById(int id, List<Pokemon> pokemonList){
@@ -214,5 +220,9 @@ public class Repository {
         webService.downloadMoves(moves, moveCount);
     }
 
+    public void downloadAbilities(List<AbilityDetail> abilities, int abilityCount){
+        WebService webService = new WebService(context);
+        webService.downloadAbilities(abilities, abilityCount);
+    }
 
 }

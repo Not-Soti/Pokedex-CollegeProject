@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.SearchView;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.Pokemon;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,8 +64,9 @@ public class PokedexFragment extends Fragment {
 
     private int pokemonCount = 10;
 
-    private final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
-    private final int MAX_MOVE_NUMBER = 621; //Numero total de movimientos en la API
+    private static final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
+    private static final int MAX_MOVE_NUMBER = 10;// 621; //Numero total de movimientos en la API
+    private static final int MAX_ABILITY_NUMBER = 20;// 232; //Numero total de habilidades en la API
 
     private ButtonFavListener favListener = new ButtonFavListener() {
         @Override
@@ -155,21 +157,6 @@ public class PokedexFragment extends Fragment {
             @SuppressLint("NonConstantResourceId")
             @Override
             public void onClick(View v) {
-                /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = requireActivity().getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_pokedex_search, null);
-
-
-                builder.setView(dialogView)
-                        .setPositiveButton(R.string.search_diag_search, (dialog, which) -> {
-                            RadioGroup radioGroup = dialogView.findViewById(R.id.search_diag_radioGroup);
-                            TextView inputText = dialogView.findViewById(R.id.search_diag_inputText);
-                            Spinner spinner = dialogView.findViewById(R.id.search_diag_spinner);
-
-
-                        }).setNegativeButton(R.string.common_cancel, (dialog, which) -> dialog.dismiss());
-                builder.create().show();*/
-
                 SearchFragment searchFragment = new SearchFragment();
                 FragmentManager fragmentManager = getChildFragmentManager();
                 searchFragment.show(fragmentManager, "search_dialog");
@@ -189,8 +176,10 @@ public class PokedexFragment extends Fragment {
              */
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             int numberOfPokemonTeam = prefs.getInt("cantidad_equipo", 0);
-            if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()){
-                if(viewModel.getMoveList().isEmpty()) {
+            if(numberOfPokemonTeam == viewModel.getPokemonTeam().getValue().size()) {
+                if (viewModel.getAbilityList().isEmpty()) {
+                    getAbilities(); //Se descargan las abilidades si no estan descargadas
+                }else if(viewModel.getMoveList().isEmpty()){
                     getMoves(); //Se descargan los movimientos si no estan descargados
                 }else{
                     getPokemonAll(); //Si no, descargar pokemon
@@ -198,161 +187,7 @@ public class PokedexFragment extends Fragment {
             }
         });
 
-        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
-            @Override
-            public void onChanged(ObservableList<Pokemon> sender) {
-                viewModel.updateIDsInTeam();
-            }
-            @Override
-            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-            }
-            @Override
-            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-
-                //Se toman los favoritos y se indica si el pokemon insertado lo es
-                if(viewModel.getFavPokemonIDs() != null){
-                    if(viewModel.getFavPokemonIDs().contains(sender.get(positionStart).getId())){
-                        sender.get(positionStart).isFav = true;
-                        viewModel.addPokemonToFavs(sender.get(positionStart));
-                    }else{
-                        sender.get(positionStart).isFav = false;
-                    }
-                }
-
-                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
-                if(viewModel.getPokemonIDsInTeam() != null){
-                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
-                        sender.get(positionStart).isInTeam = true;
-                        viewModel.addPokemonToFavs(sender.get(positionStart));
-                    }else{
-                        sender.get(positionStart).isInTeam = false;
-                    }
-                }
-
-                //Se actualiza el progreso del dialogo
-                if(progressDialog != null){
-                    progressDialog.setProgress(sender.size());
-                }
-
-                //En caso de estar descargando pokemon sabiendo el limite maximo,
-                //si se han descargado todos los pokemon, se popula el recyclerView
-                if(!isPerformingSearch) {
-                    if (sender.size() == pokemonCount) {
-                        listToUse = new ObservableArrayList<>();
-                        listToUse.addAll(viewModel.getPokemonList());
-                        populatePokemonAdapter();
-                    }
-                }else{
-                    listToUse = new ObservableArrayList<>();
-                    listToUse.addAll(viewModel.getPokemonList());
-                    populatePokemonAdapter();
-                }
-            }
-            @Override
-            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
-            }
-            @Override
-            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-            }
-        });
-
-        viewModel.getFavsList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
-            @Override
-            public void onChanged(ObservableList<Pokemon> sender) {
-                viewModel.updateIDsInTeam();
-            }
-
-            @Override
-            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-            }
-
-            @Override
-            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                //Log.d(TAG, "A descargar " + viewModel.getFavPokemonIDs().size() + ", descargados " + viewModel.getFavsList().size());
-                if(progressDialog != null){
-                    progressDialog.setProgress(sender.size());
-                }
-
-                //Se marca el pokemon como favorito
-                sender.get(positionStart).isFav = true;
-
-                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
-                if(viewModel.getPokemonIDsInTeam() != null){
-                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
-                        sender.get(positionStart).isInTeam = true;
-                        viewModel.addPokemonToFavs(sender.get(positionStart));
-                    }else{
-                        sender.get(positionStart).isInTeam = false;
-                    }
-                }
-
-                if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
-                    if (tabLayout.getSelectedTabPosition() == 1) {
-                        //viewModel.setUsableList(viewModel.getFavsList());
-                        //populatePokemonAdapter(viewModel.getFavsList());
-                        listToUse = new ObservableArrayList<>();
-                        listToUse.addAll(viewModel.getFavsList());
-                        populatePokemonAdapter();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
-
-            }
-            @Override
-            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                if (tabLayout.getSelectedTabPosition() == 1) {
-                    //viewModel.setUsableList(viewModel.getFavsList());
-                    //populatePokemonAdapter(viewModel.getFavsList());
-                    listToUse = new ObservableArrayList<>();
-                    listToUse.addAll(viewModel.getFavsList());
-                    populatePokemonAdapter();
-                }
-            }
-        });
-
-        viewModel.getMoveList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<MoveDetail>>() {
-            @Override
-            public void onChanged(ObservableList<MoveDetail> sender) {
-
-            }
-
-            @Override
-            public void onItemRangeChanged(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
-
-            }
-
-            @Override
-            public void onItemRangeInserted(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
-                if(progressDialog != null){
-                    progressDialog.setProgress(sender.size());
-                }
-
-                if(sender.size() == MAX_MOVE_NUMBER){
-                    //Si se descargaron todos los movimientos, se ordenan por ID y se pasa a descargar los pokemon
-                    Collections.sort(viewModel.getMoveList(), (m1, m2) -> m1.getId() - m2.getId());
-
-                    if(progressDialog != null){
-                        progressDialog.dismiss();
-                    }
-
-                    getPokemonAll(); //Descargar pokemon
-                }
-            }
-
-            @Override
-            public void onItemRangeMoved(ObservableList<MoveDetail> sender, int fromPosition, int toPosition, int itemCount) {
-
-            }
-
-            @Override
-            public void onItemRangeRemoved(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
-
-            }
-        });
+        initViewModelListeners();
 
         recyclerView = theView.findViewById(R.id.pokedexFrag_recyclerView);
         tabLayout = theView.findViewById(R.id.pokedexFrag_TabLayout);
@@ -456,8 +291,9 @@ public class PokedexFragment extends Fragment {
 
     }
 
-    protected void getPokemonByHability(String hability){
-
+    protected void getPokemonByHability(int abilityId){
+        viewModel.clearPokemonList();
+        downloadPokemonByAbility(abilityId);
     }
 
     private void downloadPokemonAll(){
@@ -515,6 +351,19 @@ public class PokedexFragment extends Fragment {
         viewModel.updatePokemonListByMove(pokemonCount, moveID);
     }
 
+    private void downloadPokemonByAbility(int abilityID){
+        Log.d(TAG, "downloadPokemonByAbility");
+        isPerformingSearch = true; //Se descargan los que encajen con el parametro indicado
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Se está descargando la informacion necesaria");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        viewModel.updatePokemonListByAbility(pokemonCount, abilityID);
+    }
+
 
     /**
      * Puebla el adaptador con los pokemon necesarios
@@ -564,7 +413,7 @@ public class PokedexFragment extends Fragment {
             Iterator<Pokemon> it = listToFilter.iterator();
             while (it.hasNext()) {
                 //Se obtiene el id y se pasa a String para comparar
-                if (!String.valueOf(it.next().getId()).contains(newText)) {
+                if (!String.valueOf(it.next().getId()).contains(String.valueOf(idTofilter))) {
                     it.remove();
                 }
             }
@@ -603,5 +452,237 @@ public class PokedexFragment extends Fragment {
         viewModel.updateMoves(MAX_MOVE_NUMBER);
     }
 
+    /**
+     * Metodo utilizado para descargar las habilidades existentes
+     * y su traduccion
+     */
+    private void getAbilities(){
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Descargando");
+        progressDialog.setMessage("Observando sus habilidades");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(MAX_ABILITY_NUMBER);
+        progressDialog.show();
+        viewModel.updateAbilities(MAX_ABILITY_NUMBER);
+    }
+
+
+    /**
+     * Metodo que inicia los listeners de las ObservableArrayList
+     * que existen en el viewmodel
+     */
+    private void initViewModelListeners(){
+        //Lista de pokemon generica
+        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
+            @Override
+            public void onChanged(ObservableList<Pokemon> sender) {
+                viewModel.updateIDsInTeam();
+            }
+            @Override
+            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+            }
+            @Override
+            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+
+                //Se toman los favoritos y se indica si el pokemon insertado lo es
+                if(viewModel.getFavPokemonIDs() != null){
+                    if(viewModel.getFavPokemonIDs().contains(sender.get(positionStart).getId())){
+                        sender.get(positionStart).isFav = true;
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isFav = false;
+                    }
+                }
+
+                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
+                if(viewModel.getPokemonIDsInTeam() != null){
+                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
+                        sender.get(positionStart).isInTeam = true;
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isInTeam = false;
+                    }
+                }
+
+                //Se actualiza el progreso del dialogo
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
+
+                //En caso de estar descargando pokemon sabiendo el limite maximo,
+                //si se han descargado todos los pokemon, se popula el recyclerView
+                if(!isPerformingSearch) {
+                    if (sender.size() == pokemonCount) {
+                        listToUse = new ObservableArrayList<>();
+                        listToUse.addAll(viewModel.getPokemonList());
+                        populatePokemonAdapter();
+                    }
+                }else{
+                    listToUse = new ObservableArrayList<>();
+                    listToUse.addAll(viewModel.getPokemonList());
+                    populatePokemonAdapter();
+                }
+            }
+            @Override
+            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
+            }
+            @Override
+            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+            }
+        });
+
+
+        //Lista de pokemon favoritos
+        viewModel.getFavsList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
+            @Override
+            public void onChanged(ObservableList<Pokemon> sender) {
+                viewModel.updateIDsInTeam();
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                //Log.d(TAG, "A descargar " + viewModel.getFavPokemonIDs().size() + ", descargados " + viewModel.getFavsList().size());
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
+
+                //Se marca el pokemon como favorito
+                sender.get(positionStart).isFav = true;
+
+                //Se toma el equipo y se indica si el pokemon insertado pertenece a el
+                if(viewModel.getPokemonIDsInTeam() != null){
+                    if(viewModel.getPokemonIDsInTeam().contains(sender.get(positionStart).getId())){
+                        sender.get(positionStart).isInTeam = true;
+                        viewModel.addPokemonToFavs(sender.get(positionStart));
+                    }else{
+                        sender.get(positionStart).isInTeam = false;
+                    }
+                }
+
+                if(viewModel.getFavsList().size() == viewModel.getFavPokemonIDs().size()) {
+                    if (tabLayout.getSelectedTabPosition() == 1) {
+                        //viewModel.setUsableList(viewModel.getFavsList());
+                        //populatePokemonAdapter(viewModel.getFavsList());
+                        listToUse = new ObservableArrayList<>();
+                        listToUse.addAll(viewModel.getFavsList());
+                        populatePokemonAdapter();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {
+
+            }
+            @Override
+            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                if (tabLayout.getSelectedTabPosition() == 1) {
+                    //viewModel.setUsableList(viewModel.getFavsList());
+                    //populatePokemonAdapter(viewModel.getFavsList());
+                    listToUse = new ObservableArrayList<>();
+                    listToUse.addAll(viewModel.getFavsList());
+                    populatePokemonAdapter();
+                }
+            }
+        });
+
+
+        //Lista de movimientos
+        viewModel.getMoveList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<MoveDetail>>() {
+            @Override
+            public void onChanged(ObservableList<MoveDetail> sender) {
+
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
+
+                if(sender.size() == MAX_MOVE_NUMBER){
+                    //Si se descargaron todos los movimientos, se ordenan por ID y se pasa a descargar los pokemon
+                    Collections.sort(viewModel.getMoveList(), (m1, m2) -> m1.getId() - m2.getId());
+
+                    if(progressDialog != null){
+                        progressDialog.dismiss();
+                    }
+
+                    getPokemonAll(); //Descargar pokemon
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<MoveDetail> sender, int fromPosition, int toPosition, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<MoveDetail> sender, int positionStart, int itemCount) {
+
+            }
+        });
+
+
+        //Lista de habilidades
+        viewModel.getAbilityList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<AbilityDetail>>() {
+            @Override
+            public void onChanged(ObservableList<AbilityDetail> sender) {
+
+            }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<AbilityDetail> sender, int positionStart, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<AbilityDetail> sender, int positionStart, int itemCount) {
+                //Log.d(TAG, "Insertando habilidad "+sender.get(positionStart).getName());
+                if(progressDialog != null){
+                    progressDialog.setProgress(sender.size());
+                }
+
+                if(sender.size() == MAX_ABILITY_NUMBER){
+                    //Si se descargaron todos los movimientos, se ordenan por ID y se pasa a descargar los pokemon
+                    Collections.sort(viewModel.getAbilityList(), (a1, a2) -> a1.getId() - a2.getId());
+
+                    if(progressDialog != null){
+                        progressDialog.dismiss();
+                    }
+
+                    //Si no se tienen los movimientos se descargan.
+                    if(viewModel.getMoveList().isEmpty()) {
+                        getMoves(); //Descargar los movimientos
+                    }else{
+                        //Si ya se tenian de antes, se descargan los pokemon
+                        getPokemonAll();
+                    }
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<AbilityDetail> sender, int fromPosition, int toPosition, int itemCount) {
+
+            }
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<AbilityDetail> sender, int positionStart, int itemCount) {
+
+            }
+        });
+    }
 
 }

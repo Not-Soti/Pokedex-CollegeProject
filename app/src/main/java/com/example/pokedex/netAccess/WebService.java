@@ -8,6 +8,10 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.ObservableArrayList;
 
 import com.example.pokedex.R;
+import com.example.pokedex.model.pokeApiModel.Ability;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail_Pokemon;
+import com.example.pokedex.model.pokeApiModel.AbilityDetail.AbilityDetail_Pokemon__1;
 import com.example.pokedex.model.pokeApiModel.Language;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail;
 import com.example.pokedex.model.pokeApiModel.MoveDetail.MoveDetail_Language;
@@ -182,7 +186,7 @@ public class WebService {
     }
 
     /**
-     * Metodo que descarga los pokemon que coincidad con el tipo elegido, y su ID es menor que
+     * Metodo que descarga los pokemon que coincidan con el tipo elegido, y su ID es menor que
      * el que se pasa como argumento
      * @param pokemonCount: Maximo ID a descargar
      * @param pokemonList: Lista a la que se añadiran los pokemon
@@ -220,9 +224,52 @@ public class WebService {
 
             }
         });
-
     }
 
+    /**
+     * Metodo que descarga los pokemon que tienen la habilidad especificada
+     * @param pokemonCount: ID maximo del pokemon a descargar
+     * @param pokemonList: Lista donde insertar los resultados de la descarga
+     * @param abilityID: ID de la habilidad cuyos pokemon se desean descargar
+     */
+    public void downloadPokemonByAbility(int pokemonCount, ObservableArrayList<Pokemon> pokemonList, int abilityID) {
+        Log.d(TAG, "Obteniendo pokemon con la habilidad "+abilityID);
+        restService.getAbilityDetailById(abilityID).enqueue(new Callback<AbilityDetail>() {
+            @Override
+            public void onResponse(Call<AbilityDetail> call, Response<AbilityDetail> response) {
+                AbilityDetail abilityDetail = response.body();
+
+                Log.d(TAG, "Obtenida la habilidad "+abilityDetail.getId());
+
+                if(response!=null){
+                    LinkedList<AbilityDetail_Pokemon> lista = new LinkedList<>(abilityDetail.getPokemon()); //Lista de pokemon con la habilidad dada
+
+                    //Se recorren los pokemon buscando su ID para luego descargarlos individualmente
+                    for(AbilityDetail_Pokemon poke : lista){
+                        AbilityDetail_Pokemon__1 pokemonAux = poke.getPokemon(); //Paso intermedio necesario
+
+                        String[] url_split = pokemonAux.getUrl().split("/"); //El ID es el ultimo elemento de la URL
+                        int id = Integer.parseInt(url_split[url_split.length - 1]);
+                        Log.d(TAG, "Buscando el pokemon "+id);
+                        if (id <= pokemonCount) {
+                            getPokemonByID(id, pokemonList);
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<AbilityDetail> call, Throwable t) {
+
+            }
+        });
+    }
+
+    /**
+     * Metodo que descarga los pokemon que conocen el movimiento dado
+     * @param pokemonCount: ID maximo del pokemon que se quiere descargar
+     * @param pokemonList: Lista donde insertar los resultados de la descarga
+     * @param moveID: ID del movimiento a partir del cual quieren descargarse los pokemon
+     */
     public void downloadPokemonByMove(int pokemonCount, ObservableArrayList<Pokemon> pokemonList, int moveID) {
         restService.getMoveDetailByIds(moveID).enqueue(new Callback<MoveDetail>() {
             @Override
@@ -246,7 +293,6 @@ public class WebService {
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<MoveDetail> call, Throwable t) {
 
@@ -254,8 +300,9 @@ public class WebService {
         });
     }
 
+
     public void downloadMoves(List<MoveDetail> moves, int moveCount) {
-        //Se descargan los movimientos 1 a 1 y se añaden al hashmap.
+        //Se descargan los movimientos 1 a 1 y se añaden a la lista.
         for(int i=1; i<=moveCount; i++){
             restService.getMoveDetailByIds(i).enqueue(new Callback<MoveDetail>() {
                 @Override
@@ -263,7 +310,9 @@ public class WebService {
                     MoveDetail moveDetail = response.body();
 
                     if(moveDetail != null){
-                        moves.add(moveDetail);
+                        synchronized (moves) {
+                            moves.add(moveDetail);
+                        }
                     }
                 }
 
@@ -274,4 +323,30 @@ public class WebService {
             });
         }
     }
+
+    public void downloadAbilities(List<AbilityDetail> abilities, int abilityCount){
+        //Se descargan las habilidades de 1 en 1 y se agregan a la lista
+        for(int i=1; i<=abilityCount; i++){
+            restService.getAbilityDetailById(i).enqueue(new Callback<AbilityDetail>() {
+                @Override
+                public void onResponse(Call<AbilityDetail> call, Response<AbilityDetail> response) {
+                    AbilityDetail abilityDetail = response.body();
+
+                    if(abilityDetail != null){
+                        //Log.d(TAG, "Descargada habilidad "+abilityDetail.getId());
+                        synchronized (abilities) {
+                            abilities.add(abilityDetail);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AbilityDetail> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+
 }
