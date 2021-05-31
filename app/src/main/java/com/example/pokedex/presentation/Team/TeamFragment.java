@@ -112,13 +112,6 @@ public class TeamFragment extends Fragment{
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         int numberOfPokemon = prefs.getInt("cantidad_equipo", 0);
 
-        viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
-            if((!isDownloading) && (viewModel.getPokemonTeam().getValue().size()==numberOfPokemon) && (numberOfPokemon!=0)) {
-                isDownloading=true;
-                downloadPokemon();
-            }
-        });
-
         initViewModelListeners(numberOfPokemon);
 
         return theView;
@@ -201,6 +194,14 @@ public class TeamFragment extends Fragment{
             @Override
             public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
                 populatePokemonAdapter();
+            }
+        });
+
+
+        viewModel.getPokemonTeam().observe(getViewLifecycleOwner(), pokemonTeamEntities -> {
+            if((!isDownloading) && (viewModel.getPokemonTeam().getValue().size()==numberOfPokemon) && (numberOfPokemon!=0)) {
+                isDownloading=true;
+                downloadPokemon();
             }
         });
     }

@@ -34,4 +34,7 @@
     <string name="search_diag_type">Type</string>
     <string name="search_diag_all">All</string>
     <string name="search_diag_label">Search by:</string>
+    <string name="preferences_numberOfPokemon">Number of pokemon to use:</string>
+    <string name="preferences_nightMode">Activate night mode</string>
+    <string name="preferences_title">Options</string>
 </resources>

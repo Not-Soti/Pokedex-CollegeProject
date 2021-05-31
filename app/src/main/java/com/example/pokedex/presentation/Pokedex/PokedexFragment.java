@@ -41,8 +41,8 @@ import java.util.Iterator;
 public class PokedexFragment extends Fragment {
 
     private static final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
-    private static final int MAX_MOVE_NUMBER = 10; //621; //Numero total de movimientos en la API
-    private static final int MAX_ABILITY_NUMBER = 10; // 232; //Numero total de habilidades en la API
+    private static final int MAX_MOVE_NUMBER = 621; //Numero total de movimientos en la API
+    private static final int MAX_ABILITY_NUMBER = 232; //Numero total de habilidades en la API
 
     private RecyclerView recyclerView;
     private PokedexRecyclerAdapter pokemonAdapter;

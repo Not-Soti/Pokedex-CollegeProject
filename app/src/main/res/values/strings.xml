@@ -37,6 +37,9 @@
     <string name="search_diag_type">Tipo</string>
     <string name="search_diag_all">Todos</string>
     <string name="search_diag_label">Buscar por:</string>
+    <string name="preferences_numberOfPokemon">Cantidad de pokemon utilizable:</string>
+    <string name="preferences_nightMode">Activar modo nocturno</string>
+    <string name="preferences_title">Opciones</string>
 
 
 </resources>
