@@ -1,7 +1,9 @@
 package com.example.pokedex;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 

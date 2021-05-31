@@ -318,7 +318,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="tipo2"
-                android:textColor="?attr/text_color"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="@+id/poke_detail_type1Tv"

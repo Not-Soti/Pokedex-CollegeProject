@@ -32,6 +32,11 @@
     <string name="poke_detail_flavorTextUnknown">No se tienen datos sobre este pokemon</string>
     <string name="search_diag_search">Buscar</string>
     <string name="common_cancel">Cancelar</string>
+    <string name="search_diag_ability">Habilidad</string>
+    <string name="search_diag_move">Movimiento</string>
+    <string name="search_diag_type">Tipo</string>
+    <string name="search_diag_all">Todos</string>
+    <string name="search_diag_label">Buscar por:</string>
 
 
 </resources>

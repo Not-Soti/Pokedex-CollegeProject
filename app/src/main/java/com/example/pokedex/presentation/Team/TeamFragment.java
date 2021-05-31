@@ -119,33 +119,7 @@ public class TeamFragment extends Fragment{
             }
         });
 
-        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
-            @Override
-            public void onChanged(ObservableList<Pokemon> sender) { }
-
-            @Override
-            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) { }
-
-            @Override
-            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                if(progressDialog != null) {
-                    progressDialog.setProgress(sender.size());
-                }
-
-                //Si se han descargado todos los pokemon, se muestran
-                if(sender.size() == numberOfPokemon){
-                    populatePokemonAdapter();
-                }
-            }
-
-            @Override
-            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {}
-
-            @Override
-            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
-                populatePokemonAdapter();
-            }
-        });
+        initViewModelListeners(numberOfPokemon);
 
         return theView;
     }
@@ -200,4 +174,34 @@ public class TeamFragment extends Fragment{
         }
     }
 
+
+    public void initViewModelListeners(int numberOfPokemon){
+        viewModel.getPokemonList().addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<Pokemon>>() {
+            @Override
+            public void onChanged(ObservableList<Pokemon> sender) { }
+
+            @Override
+            public void onItemRangeChanged(ObservableList<Pokemon> sender, int positionStart, int itemCount) { }
+
+            @Override
+            public void onItemRangeInserted(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                if(progressDialog != null) {
+                    progressDialog.setProgress(sender.size());
+                }
+
+                //Si se han descargado todos los pokemon, se muestran
+                if(sender.size() == numberOfPokemon){
+                    populatePokemonAdapter();
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(ObservableList<Pokemon> sender, int fromPosition, int toPosition, int itemCount) {}
+
+            @Override
+            public void onItemRangeRemoved(ObservableList<Pokemon> sender, int positionStart, int itemCount) {
+                populatePokemonAdapter();
+            }
+        });
+    }
 }

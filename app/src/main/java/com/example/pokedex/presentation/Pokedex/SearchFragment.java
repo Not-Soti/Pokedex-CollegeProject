@@ -75,6 +75,8 @@ public class SearchFragment extends DialogFragment {
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, translatedTypes);
                     adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                     spinner.setAdapter(adapter);
+                }else if(checkedId == R.id.search_diag_allBtn){
+                    spinner.setAdapter(null);
                 }
             }
         });

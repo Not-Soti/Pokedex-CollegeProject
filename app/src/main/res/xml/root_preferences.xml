@@ -11,6 +11,11 @@
             android:title="Nº de pokemon"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:key="NightMode"
+            app:title="Modo noche"
+            android:defaultValue="false"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

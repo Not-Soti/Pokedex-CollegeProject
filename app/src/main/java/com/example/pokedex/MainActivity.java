@@ -1,6 +1,7 @@
 package com.example.pokedex;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -30,7 +31,15 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(), "Online: ".concat(online), Toast.LENGTH_LONG).show();
         Log.d(TAG,"Online: ".concat(online) );
 
-        //getSupportActionBar().hide();
+        //Obtener de las preferencis si el modo noche está activo para aplicarlo
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean nightMode = sharedPreferences.getBoolean("NightMode", false);
+
+        if(nightMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
     }
 

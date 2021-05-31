@@ -40,6 +40,10 @@ import java.util.Iterator;
  */
 public class PokedexFragment extends Fragment {
 
+    private static final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
+    private static final int MAX_MOVE_NUMBER = 10; //621; //Numero total de movimientos en la API
+    private static final int MAX_ABILITY_NUMBER = 10; // 232; //Numero total de habilidades en la API
+
     private RecyclerView recyclerView;
     private PokedexRecyclerAdapter pokemonAdapter;
     private PokedexViewModel viewModel;
@@ -63,10 +67,6 @@ public class PokedexFragment extends Fragment {
     private boolean isPerformingSearch = false;
 
     private int pokemonCount = 10;
-
-    private static final int MAX_POKEMON_NUMBER = 1118; //Numero total de pokemon en la API
-    private static final int MAX_MOVE_NUMBER = 10;// 621; //Numero total de movimientos en la API
-    private static final int MAX_ABILITY_NUMBER = 20;// 232; //Numero total de habilidades en la API
 
     private ButtonFavListener favListener = new ButtonFavListener() {
         @Override

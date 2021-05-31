@@ -21,11 +21,7 @@
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginRight="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@tools:sample/avatars" />
@@ -40,19 +36,19 @@
                 android:textSize="@dimen/poke_detail_name_textSize"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/divider"
-                app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/poke_detail_idTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
                 android:text="Nº"
                 android:textColor="?attr/text_color"
                 android:textSize="@dimen/poke_detail_name_textSize"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/divider"
-                app:layout_constraintTop_toBottomOf="@+id/poke_detail_sprite" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/poke_detail_nameTv" />
 
             <View
                 android:id="@+id/divider"
@@ -60,8 +56,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
                 android:background="?android:attr/listDivider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/poke_detail_idTv"
                 app:layout_constraintTop_toBottomOf="@+id/poke_detail_nameTv" />
 
             <TextView
@@ -72,8 +67,8 @@
                 android:text="@string/poke_detail_flavorTextUnknown"
                 android:textColor="?attr/text_color"
                 android:textSize="@dimen/poke_detail_flavorEntry_textSize"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/divider"
+                app:layout_constraintStart_toStartOf="@+id/divider"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
             <TextView
@@ -102,15 +97,11 @@
                 android:id="@+id/constraintLayout"
                 android:layout_width="350dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
                 android:orientation="vertical"
                 android:padding="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/poke_detail_type2Tv"
+                app:layout_constraintStart_toStartOf="@+id/poke_detail_weightTv"
                 app:layout_constraintTop_toBottomOf="@+id/poke_detail_weightTv">
 
                 <TextView
@@ -318,7 +309,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="tipo2"
-                android:textColor="?attr/text_color"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="@+id/poke_detail_type1Tv"

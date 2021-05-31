@@ -29,4 +29,9 @@
     <string name="poke_detail_flavorTextUnknown">Pokemon data not found</string>
     <string name="search_diag_search">Search</string>
     <string name="common_cancel">Cancel</string>
+    <string name="search_diag_ability">Ability</string>
+    <string name="search_diag_move">Move</string>
+    <string name="search_diag_type">Type</string>
+    <string name="search_diag_all">All</string>
+    <string name="search_diag_label">Search by:</string>
 </resources>

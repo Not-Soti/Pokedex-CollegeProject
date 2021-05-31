@@ -51,7 +51,7 @@ public class TeamViewModel extends AndroidViewModel {
 
         //Se busca el pokemon y se elimina de la lista
         for(int i=0; i<pokemonList.size(); i++){
-            if(pokemonList.get(i).getId() == pokemon.getId()){
+            if(pokemonList.get(i).getId().equals(pokemon.getId())){
                 pokemonList.remove(i);
             }
         }
