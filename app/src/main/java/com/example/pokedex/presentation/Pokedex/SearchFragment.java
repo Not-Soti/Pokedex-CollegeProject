@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Fragmento de opciones de búsqueda
+ */
 public class SearchFragment extends DialogFragment {
 
     private RadioGroup radioGroup;

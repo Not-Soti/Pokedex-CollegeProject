@@ -54,10 +54,6 @@ public class WebService {
     private Gson gson;
     private Retrofit retrofit;
 
-    //Campo que indica el lenguaje del sistema, usado para obtener
-    //los elementos en el idioma correspondiente
-    private String systemLanguaje;
-
 
     public WebService(Context c){
         context = c;
@@ -77,13 +73,18 @@ public class WebService {
 
     }
 
+    /**
+     * Metodo que obtiene el indice de pokemon, y lo usa para buscarlos 1 por 1.
+     * Obtiene una lista que contiene: Nombre del pokemon y URL del pokemon
+     * @param pokemonCount: Cantidad de pokemon a descargar
+     * @param pokemonList: Lista donde añadirlos cuando sean descargados
+     */
     public void getPokemonFromJSON(int pokemonCount, List<Pokemon> pokemonList){
         restService.getPokemonList(pokemonCount).enqueue(new Callback<PokemonIndex>() {
             @Override
             public void onResponse(Call<PokemonIndex> call, Response<PokemonIndex> response) {
 
                 PokemonIndex pokemonIndex = response.body();
-
 
                 //Lista con nombre y URL de cada pokemon
                 LinkedList<PokemonIndexItem> lista = new LinkedList<>(pokemonIndex.getPokemonIndexItems());
@@ -93,7 +94,7 @@ public class WebService {
                     String[] url_split = pokeInfo.getUrl().split("/"); //El ID es el ultimo elemento de la URL
                     int id = Integer.parseInt(url_split[url_split.length-1]);
 
-                    getPokemonByID(id, pokemonList);
+                    getPokemonByID(id, pokemonList); //Se descarga el pokemon con el ID seleccionado
                 }
             }
             @Override
@@ -103,6 +104,11 @@ public class WebService {
         });
     }
 
+    /**
+     * Metodo que descarga los pokemon cuyos id se encuentran en el HashSet indicado
+     * @param pokemonIDs: HashSet con los ID de los pokemon que se desean descargar
+     * @param pokemonList: Lista donde añadirlos cuando se descarguen
+     */
     public void getFavsFromJSON(HashSet<Integer> pokemonIDs, List<Pokemon> pokemonList){
         for(int id : pokemonIDs){
             Log.d(TAG, "getFavsFromJSON id "+ id);
@@ -110,6 +116,11 @@ public class WebService {
         }
     }
 
+    /**
+     * Metodo que descarga la informacion de un pokemon segun su ID
+     * @param id: ID del pokemon a descargar
+     * @param pokemonList: Lista donde añadirlo cuando se descargue
+     */
     public void getPokemonByID(int id, List<Pokemon> pokemonList){
 
         //De esta peticion se obtiene el objeto Pokemon necesario con sus características
@@ -117,7 +128,7 @@ public class WebService {
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 Pokemon pokemon = response.body();
-                //Obtener las imagenes de sus tipos
+                //Obtener los nombres de sus tipos
                 getTypeNames(pokemon);
 
                 //Obtener su imagen para la lista
@@ -131,6 +142,12 @@ public class WebService {
         });
     }
 
+    /**
+     * Metodo que obtiene el sprite del pokemon dado y lo guarda en dicho objeto pokemon.
+     * A continuacion, guarda finalmente el pokemon en la lista indicada
+     * @param pokemon: Pokemon del que obtener el sprite
+     * @param pokemonList: Lista donde guardar el pokemon
+     */
     private void getListSprite(Pokemon pokemon, List<Pokemon> pokemonList){
         //Se obtiene su imagen de la URL apropiada en un hilo nuevo
         Thread thread = new Thread(new Runnable() {
@@ -149,18 +166,16 @@ public class WebService {
                     sprite = ResourcesCompat.getDrawable(context.getResources(), R.drawable.pokemock, null);
                 }
                 pokemon.listSprite = sprite;
-/*                if(!treatingFavPokemon) {
-                    //((PokedexViewModel) viewModel).addPokemonToAll(pokemon);
-
-                }else{
-                    //((PokedexViewModel) viewModel).addPokemonToFavs(pokemon);
-                }*/
                 addPokemonToList(pokemonList, pokemon);
             }
         });
         thread.start();
     }
 
+    /**
+     * Metodo que obtiene el nombre de los tipos del pokemon dado
+     * @param pokemon: Pokemon del que obtener los tipos
+     */
     private void getTypeNames(Pokemon pokemon){
         //Todos los pokemon tienen 1 tipo, y algunos tienen 2
         //Obtener el nombre del primer tipo
@@ -181,6 +196,11 @@ public class WebService {
     }
 
 
+    /**
+     * Metodo que añade el pokemon dado a la lista dada de una forma thread-safe
+     * @param pokemonList: Lista donde añadir el pokemon
+     * @param pokemon: Pokemon que añadir a la lista
+     */
     private synchronized void addPokemonToList(List<Pokemon> pokemonList, Pokemon pokemon){
         pokemonList.add(pokemon);
     }
@@ -301,6 +321,11 @@ public class WebService {
     }
 
 
+    /**
+     * Metodo que descarga informacion de los movimientos pokemon
+     * @param moves: Lista donde añadir los movimientos
+     * @param moveCount: Cantidad de movimientos a descargar
+     */
     public void downloadMoves(List<MoveDetail> moves, int moveCount) {
         //Se descargan los movimientos 1 a 1 y se añaden a la lista.
         for(int i=1; i<=moveCount; i++){
@@ -324,6 +349,11 @@ public class WebService {
         }
     }
 
+    /**
+     * Metodo que descarga informacion de las habilidades pokemon
+     * @param abilities: Lista donde añadir las habilidades
+     * @param abilityCount: Cantidad de habilidades a descargar
+     */
     public void downloadAbilities(List<AbilityDetail> abilities, int abilityCount){
         //Se descargan las habilidades de 1 en 1 y se agregan a la lista
         for(int i=1; i<=abilityCount; i++){

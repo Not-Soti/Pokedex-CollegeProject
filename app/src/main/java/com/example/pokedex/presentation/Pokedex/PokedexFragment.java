@@ -34,9 +34,12 @@ import java.util.Collections;
 import java.util.Iterator;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link PokedexFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * El workflow del fragmento es el siguiente:
+ * 1) Obtener de la BBDD qué pokemon pertenecen al equipo y a los favoritos
+ * 2) Cuando se tengan, descargar la informacion de los movimientos
+ * 3) Cuando se tengan los moviminetos, se descargan las habilidades
+ * 4) Cuando se tengan las habilidades, se descargan los pokemon
+ * 5) Cuando se tengan todos, se muestran por pantalla.
  */
 public class PokedexFragment extends Fragment {
 

@@ -42,14 +42,25 @@ public interface RestService {
     /**
      * Metodo que obtiene el JSON con los detalles del tipo pokemon seleccionado
      * @param type: tipo pokemon del que buscar el detalle (Planta, Fuego, Agua...)
-     * @return
+     * @return: Objeto con los detalles del Tipo pokemon seleccionado
      */
     @GET("type/{type_string}")
     Call<TypeDetail> getPokemonTypeDetail(@Path("type_string") String type);
 
+
+    /**
+     * Metodo que obtiene el JSON con los detalles del movimiento pokemon seleccionado
+     * @param move_id: id del movimiento del que buscar el detalle
+     * @return: Objeto con los detalles del movimineto pokemon seleccionado
+     */
     @GET("move/{move_id}")
     Call<MoveDetail> getMoveDetailByIds(@Path("move_id") int move_id);
 
+    /**
+     * Metodo que obtiene el JSON con los detalles del movimiento pokemon seleccionado
+     * @param ability_id: id de la habilidad de la que buscar el detalle
+     * @return: Objeto con los detalles de la habilidad pokemon seleccionada
+     */
     @GET("ability/{ability_id}")
     Call<AbilityDetail> getAbilityDetailById(@Path("ability_id") int ability_id);
 }

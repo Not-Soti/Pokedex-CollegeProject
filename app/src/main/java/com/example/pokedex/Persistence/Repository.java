@@ -144,6 +144,10 @@ public class Repository {
         return favs;
     }
 
+    /**
+     * Metodo que añade el pokemon indicado a favoritos
+     * @param p: Pokemon a registrar como favorito
+     */
     public synchronized void addFavPokemon(Pokemon p){
         HashSet<Integer> favs = getFavouritePokemon();
         FileOutputStream fos = null;
@@ -167,6 +171,9 @@ public class Repository {
         }
     }
 
+    /**
+     * Metodo que elimina el pokemon indicado de favoritos
+     */
     public synchronized void removeFavPokemon(Pokemon p){
         HashSet<Integer> favs = getFavouritePokemon();
         FileOutputStream fos = null;
@@ -194,6 +201,9 @@ public class Repository {
         return pokemonTeam;
     }
 
+    /**
+     * Metodo que registra el pokemon indicado como perteneciente al equipo
+     */
     public void insertPokemonIntoTeam(PokemonTeamEntity poke){
         new InsertInTeamAsyncTask(pokemonDAO).execute(poke);
 
@@ -203,6 +213,9 @@ public class Repository {
         e.apply();
     }
 
+    /**
+     * Metodo que elimina el pokemon indicado del equipo
+     */
     public void removePokemonFromTeam(PokemonTeamEntity poke){
         new RemoveTeamAsyncTask(pokemonDAO).execute(poke);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -215,6 +228,11 @@ public class Repository {
         new UpdateInTeamAsyncTask(pokemonDAO).execute(poke);
     }
 
+    /**
+     * Metodo que descarga informacion de los movimientos de los pokemon
+     * @param moves: Lista donde añadir la informacion
+     * @param moveCount: Cantidad de movimientos a descargar
+     */
     public void downloadMoves(List<MoveDetail> moves, int moveCount) {
         WebService webService = new WebService(context);
         webService.downloadMoves(moves, moveCount);
