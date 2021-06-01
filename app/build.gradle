@@ -63,5 +63,8 @@ dependencies {
     def room_version = "2.2.3"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
-    
+
+    /* Instrumented tests */
+    androidTestImplementation('com.schibsted.spain:barista:3.9.0') {}
+    testImplementation "org.mockito:mockito-core:3.+"
 }

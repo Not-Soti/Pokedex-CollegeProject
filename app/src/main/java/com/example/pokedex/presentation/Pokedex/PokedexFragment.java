@@ -59,7 +59,7 @@ public class PokedexFragment extends Fragment {
 
     private FloatingActionButton searchButton;
 
-    /*Flag que controla si se esta haciendo una busqueda personalizada o no.
+    /*Flag que controla si se esta haciendo una busqueda personalizada o no. 
       Cuando no se hace, se descargan los N primeros pokemon, por lo que no se muestran
       hasta que no se descarguen todos. Al hacer una búsqueda no es posible saber de antemano
       cuantos se van a descargar, por lo tanto se mostraran a medida que se descarguen.
